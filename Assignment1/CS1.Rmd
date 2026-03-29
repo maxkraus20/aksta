@@ -22,8 +22,8 @@ Write two different R functions which return the sequence
 $r_{i}=F_{i+1}/F_i$ for $i=1,\ldots,n$ where $F_i$ is the $i$th
 Fibonacci number, once using `for` and once using `while`.
 
-```{r eval=FALSE}
-
+```{r}
+# for 
 fib_for <- function(n) {
   f <- c(1, 1)
   
@@ -34,7 +34,7 @@ fib_for <- function(n) {
   return(f[2:(n + 1)] / f[1:n])
 }
   
-
+# while
 fib_while <- function(n) {
   f <- c(1, 1)
 
@@ -53,7 +53,7 @@ Benchmark the two functions for $n=200$ and $n=2000$ (you can use
 package **microbenchmark** or package **bench** for this purpose). Which
 function is faster?
 
-```{r eval=FALSE}
+```{r}
 bm_200 <- microbenchmark(fib_for(200), fib_while(200), times = 100)
 bm_2000 <- microbenchmark(fib_for(2000), fib_while(2000), times = 100)
 
@@ -66,7 +66,7 @@ print(bm_2000)
 Plot the sequence for $n=100$. For which $n$ does it start to stabilize
 to a value? What number does the sequence converge to?
 
-```{r eval=FALSE}
+```{r}
 r <- fib_for(100)
 plot(r, type = "l", main = "fib_for", xlab = "n", ylab = "value")
 ```
@@ -357,12 +357,71 @@ kwtest <- function (x, g, ...)
 
 Write a pseudo code outlining what the function does.
 
+1.  Input-Handling/Validation
+
+    IF x is a list:
+
+    -   Check for having at least 2 elements and if all elements are
+        numeric
+    -   Ensure that no element is empty
+    -   Create a grouping factor
+    -   Flatten list into a single vector
+
+    ELSE IF x is a vector:
+
+    -   Ensure x and g have the same length
+    -   Convert g into a factor
+    -   Check for at least 2 groups
+
+2.  Pre-processing
+
+-   Confirm that total number fo observations is \>=2
+-   Assign ranks to all values
+-   Identify ties
+
+3.  Statistical calculation
+
+-   Calculate the sum of ranks for each group
+-   Compute the Kruskal-Wallis test statistic
+-   Adjust the statistic
+
+4.  Significance test
+
+-   Determine degrees of freedom
+-   Calculate p-value
+
+5.  Output
+
+-   Combine the statistic
+-   Return list
+
 ## b.
 
 For example data, call the function in two ways: once using `x` as a
 list and once using `x` as a vector with a corresponding `g` argument.
 Ensure that the two different function calls return the same thing by
 aligning the inputs.
+
+```{r}
+# input as list
+x_list <- list(
+  group1 = c(2.4, 2.8, 3.0),
+  group2 = c(3.5, 3.8, 4.0),
+  group3 = c(4.5, 4.9, 5.1)
+)
+
+# input as vector
+x_vector = c(2.4, 2.8, 3.0, 3.5, 3.8, 4.0, 4.5, 4.9, 5.1)
+g_vector = factor(c("group1", "group1", "group1",
+                    "group2", "group2", "group2",
+                    "group3", "group3", "group3"))
+
+result_list <- kwtest(x_list)
+result_vector <- kwtest(x_vector, g_vector)
+
+# check if the outputs are equal
+all.equal(result_list, result_vector)
+```
 
 ## c.
 
@@ -374,6 +433,37 @@ definition (see
 <https://en.wikipedia.org/wiki/Kruskal%E2%80%93Wallis_one-way_analysis_of_variance>).
 This function should also perform some checks to ensure the correctness
 of the inputs (use `kwtest()` as inspiration).
+
+```{r}
+kwfast <- function(x, g) {
+  
+  # basic checks
+  if (!is.numeric(x)) {
+    x <- as.numeric(x)
+  }
+  
+  if (length(x) != length(g)) {
+    stop("'x' and 'g' must have the same length")
+  }
+  
+  # identify groups
+  g <- as.factor(g)
+  n <- length(x)
+  k <- nlevels(g)
+  
+  # pre-processing
+  r <- rank(x)
+  
+  # stat calculation
+  rank_sums <- rowsum(r, g)
+  group_sizes <- as.numeric(table(g))
+  
+  # kruskal-wallis formula
+  statistic <- (12 / (n * (n + 1))) * sum(rank_sums^2 / group_sizes) - 3 * (n + 1)
+  
+  return(statistic)
+}
+```
 
 ## d.
 
@@ -399,6 +489,20 @@ and returns a vector of $m$ test statistics. The input of this function
 are a matrix `X` with $m$ rows and $n$ columns and a vector `g` which
 gives the grouping.
 
+```{r}
+run_kruskal_default <- function(X, g) {
+  
+  results <- apply(X, 1, function(row) {
+    
+    test_obj <- stats:::kruskal.test.default(row, g)
+    
+    return(test_obj$statistic)
+  })
+  
+  return(as.numeric(results))
+}
+```
+
 ## e.
 
 Write a function which performs the Kruskal-Wallis test using the
@@ -406,12 +510,65 @@ function in point c. for $m$ repeated experiments and returns a vector
 of $m$ test statistics. The input of this function are a matrix `X` with
 $m$ rows and $n$ columns and a vector `g` which gives the grouping.
 
+```{r}
+run_kruskal_fast <- function(X, g) {
+  
+  results <- apply(X, 1, function(row) {
+    
+    kwfast(x = row, g = g)
+  })
+  
+  return(results)
+}
+```
+
 ## f.
 
 Compare the performance of the two approaches using a benchmarking
 package on the data generated above. Comment on the results.
 
+```{r}
+performance_comparison <- microbenchmark(
+  default_method = run_kruskal_default(X, grp),
+  fast_method    = run_kruskal_fast(X, grp),
+  times = 100
+)
+
+print(performance_comparison)
+```
+
+The fast method is roughly 2.5 times faster than the default method.
+
 ## g.
 
 Now consider vectorizing the function in point c. Compare this approach
 to the other two. Comment on the results.
+
+```{r}
+run_kruskal_vec <- function(X, g) {
+  n <- ncol(X)
+  m <- nrow(X)
+  
+  R <- t(apply(X, 1, rank))
+  
+  R_sum1 <- rowSums(R[, g == 1])
+  R_sum2 <- rowSums(R[, g == 2])
+  R_sum3 <- rowSums(R[, g == 3])
+  
+  H_vec <- (12 / (n * (n + 1))) * (R_sum1^2/20 + R_sum2^2/20 + R_sum3^2/10) - 3 * (n + 1)
+  
+  return(H_vec)
+}
+
+# benchmark
+performance_all <- microbenchmark(
+  default_method = run_kruskal_default(X, grp),
+  fast_method    = run_kruskal_fast(X, grp),
+  vec_method     = run_kruskal_vec(X, grp),
+  times = 100
+)
+print(performance_all)
+```
+
+The vectorized function is the clear winner by being 21 times faster
+than the default method.
