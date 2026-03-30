@@ -1,6 +1,7 @@
 ---
 title: "Case Study 1"
 subtitle: "AKSTA Statistical Computing"
+author: "Maximilian Kraus, Lukas Vater, Hannah Weichhart"
 output: pdf_document
 header-includes:
   - \usepackage{booktabs}
@@ -82,21 +83,53 @@ Write a function to compute the following for $n$ a positive integer
 using the `gamma` function in base R. $$
 \rho_n =\frac{\Gamma((n-1)/2)}{\Gamma(1/2)\Gamma((n - 2)/2)}
 $$
-
+```{r}
+roh_n <- function(n){
+  if((is.integer(n) == FALSE) | (n<0)){
+    print('n is not a positive integer!')}
+  else{
+    gamma((n-1)/2)/(gamma(1/2)*gamma((n-2)/2))}
+}
+```
 ## b.
 
 Try $n = 2000$. What do you observe? Why do you think the observed
 behavior happens?
+
+```{r}
+roh_n(2000L)
+```
+For large n the function returns a NaN value. This could be, because the gamma function returns inf values for those n, as the resulting number is too large for R to process.
 
 ## c.
 
 Write an implementation which can also deal with large values of
 $n>1000$.
 
+```{r}
+lroh_n <- function(n){
+  if((is.integer(n) == FALSE) | (n<0)){
+    print('n not a positive integer!')}
+  else{
+    exp(lgamma((n-1)/2)-(lgamma(0.5)+lgamma((n-2)/2)))}
+}
+lroh_n(2000L)
+```
+Instead of the gamma function, here the lgamma function (the natural logarithm of gamma) is used for the calculations and afterwards the exponential function calculated. As lgamma results in lower values, R can handle these calculations better.
+
 ## d.
 
 Plot $\rho_n/\sqrt{n}$ for different values of $n$. Can you guess the
 limit of $\rho_n/\sqrt{n}$ for $n \rightarrow\infty$?
+
+```{r, echo=FALSE}
+n <- 1L:1000L
+p <- function(){
+  plot(n, sapply(n, lroh_n)/sqrt(n), type = 'l', xlab='n', ylab=expression(rho[n]~'/'~ sqrt(n)))
+  abline(h=0.4, col="red")}
+p()
+```
+The limit of $\rho_n/\sqrt{n}$ for $n \rightarrow\infty$ seems to be 0.4.
 
 # 3. Weak law of large numbers (1.5 points)
 
@@ -243,6 +276,22 @@ should have at most 10 lines (without adding commands to more lines such
 as `x <- 1; y <- 2`. Such commands will count as 2 lines!). Check that
 the function called on the same input outputs the same as the provided
 code.
+
+```{r}
+set.seed(1)
+x <- rnorm(100)
+z <- rnorm(100)
+#Adapted Code
+for (i in 1:4){
+  if(sum(x >= 0.001*i)<i){
+    stop(paste("step", i,"requires",i,"observation(s) with value >=", 0.001*i))
+  }
+  fit <- lm(x ~ z)
+  r <- fit$residuals
+  x <- i*sin(r) + i*0.01
+}
+x
+```
 
 ```{r eval=FALSE}
 set.seed(1)
