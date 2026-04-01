@@ -265,9 +265,17 @@ Read over the code below.
 
 Explain (in text) what the code does.
 
+The first Code fits the random, normally distributed vectors x and z by a linear model, if enough observations fulfill the required size. The x vector is then calculated with a sinusoidal function of the residuals.
+
+The second Code performs a kind of cross validation, as one fourth of the data is first omitted for the calculation of a linear model of two random, normally distributed vectors x and y, and the predicted. For each of the predictions the RMSE is calculated.
+
 ## b.
 
 Explain (in text) what you would change to make the code more readable.
+
+A for loop shortens the code significantly and one could easily expand the number of steps by increasing the range iterated over.
+
+A for loop also shortens the code and by adding the variables nb_sets and stepsize the amount of cross-validations performed can also be easily adapted.
 
 ## c.
 
@@ -281,7 +289,7 @@ code.
 set.seed(1)
 x <- rnorm(100)
 z <- rnorm(100)
-#Adapted Code
+#Adapted Code 1
 for (i in 1:4){
   if(sum(x >= 0.001*i)<i){
     stop(paste("step", i,"requires",i,"observation(s) with value >=", 0.001*i))
@@ -291,6 +299,23 @@ for (i in 1:4){
   x <- i*sin(r) + i*0.01
 }
 x
+```
+```{r}
+set.seed(1) 
+x <- rnorm(1000)
+y <- 2 + x + rnorm(1000)
+df <- data.frame(x, y)
+#adapted Code 2
+nb_sets <- 4
+stepsize <- nrow(df)/nb_sets
+for (j in 1:nb_sets){
+  cat("Step", j, "\n")
+  section <- (1+stepsize*(j-1)):(stepsize*j)
+  fit <- lm(y~x, data = df[-section,])
+  p1 <- predict(fit, newdata = df[section,])
+  r <- sqrt(mean((p1 - df[section, 'y'])^2))
+  print(r)
+}
 ```
 
 ```{r eval=FALSE}
