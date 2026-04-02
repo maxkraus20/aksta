@@ -1,12 +1,13 @@
 ---
 title: "Case Study 1"
-subtitle: "AKSTA Statistical Computing"
 author: "Maximilian Kraus, Lukas Vater, Hannah Weichhart"
-output: pdf_document
-header-includes:
-  - \usepackage{booktabs}
-editor_options: 
-  markdown: 
+subtitle: AKSTA Statistical Computing
+output:
+  html_document:
+    df_print: paged
+header-includes: \usepackage{booktabs}
+editor_options:
+  markdown:
     wrap: 72
 ---
 
