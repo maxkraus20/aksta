@@ -288,24 +288,25 @@ code.
 
 ```{r}
 set.seed(1)
-x <- rnorm(100)
+x_adapted <- rnorm(100)
 z <- rnorm(100)
 #Adapted Code 1
 for (i in 1:4){
-  if(sum(x >= 0.001*i)<i){
+  if(sum(x_adapted >= 0.001*i)<i){
     stop(paste("step", i,"requires",i,"observation(s) with value >=", 0.001*i))
   }
-  fit <- lm(x ~ z)
+  fit <- lm(x_adapted ~ z)
   r <- fit$residuals
-  x <- i*sin(r) + i*0.01
+  x_adapted <- i*sin(r) + i*0.01
 }
-x
+x_adapted
 ```
 ```{r}
 set.seed(1) 
 x <- rnorm(1000)
 y <- 2 + x + rnorm(1000)
 df <- data.frame(x, y)
+r_adapted <- c()
 #adapted Code 2
 nb_sets <- 4
 stepsize <- nrow(df)/nb_sets
@@ -314,9 +315,9 @@ for (j in 1:nb_sets){
   section <- (1+stepsize*(j-1)):(stepsize*j)
   fit <- lm(y~x, data = df[-section,])
   p1 <- predict(fit, newdata = df[section,])
-  r <- sqrt(mean((p1 - df[section, 'y'])^2))
-  print(r)
+  r_adapted <- c(r_adapted, sqrt(mean((p1 - df[section, 'y'])^2)))
 }
+r_adapted
 ```
 
 ```{r eval=FALSE}
@@ -349,6 +350,9 @@ r <- fit$residuals
 x <- 4 * sin(r) + .04
 x
 ```
+```{r}
+all.equal(x, x_adapted)
+```
 
 ```{r eval=FALSE}
 set.seed(1) 
@@ -376,6 +380,10 @@ fit4 <- lm(y ~ x, data = df[-(751:1000),])
 p4 <- predict(fit4, newdata = df[(751:1000),])
 r <- c(r, sqrt(mean((p4 - df[(751:1000),"y"])^2)))  
 r
+```
+
+```{r}
+all.equal(r, r_adapted)
 ```
 
 # 6. Measuring and improving performance (2 points)
