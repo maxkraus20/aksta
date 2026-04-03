@@ -82,8 +82,8 @@ $n$ = 10.
 
 Write a function to compute the following for $n$ a positive integer
 using the `gamma` function in base R. $$
-\rho_n =\frac{\Gamma((n-1)/2)}{\Gamma(1/2)\Gamma((n - 2)/2)}
-$$
+\rho_n =\frac{\Gamma((n-1)/2)}{\Gamma(1/2)\Gamma((n - 2)/2)}$$
+
 ```{r}
 roh_n <- function(n){
   if((is.integer(n) == FALSE) | (n<0)){
@@ -169,7 +169,7 @@ plot(cum_mean, type="l",
   main = "3.a) Law of Large Numbers")
 ```
 
-It can be seen, that at the first few hundred rolls the cumulative fluctuats an then convereges towards the expected value 3.5.
+It can be seen, that at the first few hundred rolls the cumulative mean fluctuates and then converges towards the expected value 3.5.
 
 ## b.
 
@@ -200,6 +200,7 @@ for (i in 1:M) {
 ## c.
 
 What is the theoretical expected value of a fair 6-sided die?
+
 It is 3.5
 
 ## d.
@@ -237,7 +238,6 @@ while (prop >= 0.05) {
 }
 print(paste("n: ", n))
 ```
-n = 64789
 
 ## f.
 
@@ -267,6 +267,7 @@ for (i in 1:M) {
   lines(cum_mean, col=i)
 }
 ```
+
 There is a general trend of the running mean moving toward zero (the expected value), but occasionally a large outlier appears and dramatically affects the running mean. As a result, the weak law of large numbers does not appear to hold for the Cauchy distribution.
 
 # 4. Central limit theorem (1.5 points)
@@ -333,7 +334,7 @@ where $X_i$ is the random variable giving the number in roll $i$.
 set.seed(100)
 
 # Function to simulate means
-simulate_means <- function(n, m = 100) {
+simulateMeans <- function(n, m = 100) {
   means <- numeric(m)
   for (i in 1:m) {
     rolls <- sample(1:6, size = n, replace = TRUE)
@@ -349,14 +350,15 @@ par(mfrow = c(1, 3))
 
 # Simulate and plot
 for (n in n_values) {
-  means <- simulate_means(n)
+  means <- simulateMeans(n)
   hist(means,
-    main = paste("4.c) Histogram of Sample Means (n = ", n, ")"),
+    main = paste("4.c) Sample Means (n = ", n, ")"),
     xlab = "Sample Mean",
     breaks = seq(3, 4, by = 0.02),
     xlim = c(3,4))
 }
 ```
+
 As n increases, the distribution of the sample means becomes narrower, meaning more of the sample means are close to the expected value μ = 3.5. The shape of the distribution approaches a normals distribution.
 
 ## d.
@@ -399,7 +401,7 @@ set.seed(100)
 mu <- 3.5
 sigma <- sqrt(mean((1:6)^2) - mu^2)
 
-simulate_Zn <- function(n, m) {
+simulateZn <- function(n, m) {
   Zn <- numeric(m)
   
   for (i in 1:m) {
@@ -418,14 +420,15 @@ par(mfrow = c(3,3))
 
 for (n in n_values) {
   for (m in m_values) {
-    Zn <- simulate_Zn(n, m)
+    Zn <- simulateZn(n, m)
     hist(Zn,
-      main = paste("4.e) Zn Histogramm (n = ", n, ", M =", m, ")"),
+      main = paste("4.e) Zn (n = ", n, ", M =", m, ")"),
       xlab = "Zn",
       breaks = 30)
   }
 }
 ```
+
 It is very clear, that the larger n and M are, the close the distribution of Zn approaches a normal distribution. Increasing M makes the histogram smoother, while increasing n slighlty reduces the spread.
 
 # 5. Readable and efficient code (1 points)
