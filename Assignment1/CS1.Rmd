@@ -11,6 +11,11 @@ editor_options:
     wrap: 72
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(microbenchmark)
+```
+
 ```{r}
 library(knitr)
 
@@ -21,11 +26,6 @@ ai_usage <- data.frame(
 )
 
 kable(ai_usage, caption = " AI Usage for Different Tasks")
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(microbenchmark)
-```
 
 # 1. Ratio of Fibonacci numbers (1 point)
 
