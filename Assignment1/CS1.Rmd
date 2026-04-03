@@ -21,8 +21,10 @@ library(knitr)
 
 ai_usage <- data.frame(
   AI_usage = c("Improving existing code", "Text correction", "Help with generating plots"),
+  Task_2 = c("little", "none", "none")
   Task_3 = c("little", "medium", "heavy"),
-  Task_4 = ("little", "medium", "heavy")
+  Task_4 = ("little", "medium", "heavy"),
+  Task_5 = c("none", "none", "none")
 )
 
 kable(ai_usage, caption = " AI Usage for Different Tasks")
