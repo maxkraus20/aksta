@@ -11,6 +11,17 @@ editor_options:
     wrap: 72
 ---
 
+```{r}
+library(knitr)
+
+ai_usage <- data.frame(
+  AI_usage = c("Improving existing code", "Text correction", "Help with generating plots"),
+  Task_3 = c("little", "medium", "heavy"),
+  Task_4 = ("little", "medium", "heavy")
+)
+
+kable(ai_usage, caption = " AI Usage for Different Tasks")
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(microbenchmark)
