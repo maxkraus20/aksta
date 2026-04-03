@@ -154,6 +154,23 @@ mean converges in probability to the expected value).
 -   Plot the running average against the number of rolls and comment on
     the result.
 
+```{r}
+set.seed(100)
+n <- 10000
+
+# Simulate rolls
+rolls <- sample(1:6, n, replace = TRUE)
+cum_mean <- cumsum(rolls) / 1:n
+
+# Plot cumulative mean
+plot(cum_mean, type="l",
+  xlab = "Number of rolls",
+  ylab = "Cumulative sum",
+  main = "3.a) Law of Large Numbers")
+```
+
+It can be seen, that at the first few hundred rolls the cumulative fluctuats an then convereges towards the expected value 3.5.
+
 ## b.
 
 -   Replicate the die-rolling experiment $M=50$ times using a for loop.
@@ -163,14 +180,34 @@ mean converges in probability to the expected value).
 -   Plot all 50 paths on the same graph to observe the variation in the
     running averages.
 
+```{r}
+set.seed(100)
+n <- 10000
+M <- 50
+
+plot(1, type="n", xlim=c(1, n), ylim=c(1,6),
+  xlab = "Number of rolls",
+  ylab = "Cumulative sum",
+  main = "3.b) Law of Large Numbers")
+  
+for (i in 1:M) {
+  rolls <- sample(1:6, n, replace = TRUE)
+  cum_mean <- cumsum(rolls) / 1:n
+  lines(cum_mean, col=i)
+}
+```
+
 ## c.
 
 What is the theoretical expected value of a fair 6-sided die?
+It is 3.5
 
 ## d.
 
 Comment on how the running mean of the paths behaves relative to the
 expected value as $n$ increases.
+
+As shown in plot 3.b, at n=1 the running mean can take any value between 1 and 6. However, as n increases, it quickly falls within the range [3, 4] and gradually converges toward the expected value of 3.5.
 
 ## e.
 
@@ -183,6 +220,25 @@ expected value as $n$ increases.
 
 -   How high is $n$ at the end of the loop?
 
+```{r}
+set.seed(100)
+n <- 0
+M <- 50
+cum_sum <- rep(0, M)
+epsilon <- 0.01
+prop <- 1
+
+while (prop >= 0.05) {
+  n <- n + 1
+  rolls <- sample(1:6, M, replace = TRUE)
+  cum_sum <- cum_sum + rolls
+  cum_mean <- cum_sum / n
+  prop <- sum(abs(cum_mean - 3.5) > epsilon) / M
+}
+print(paste("n: ", n))
+```
+n = 64789
+
 ## f.
 
 -   Repeat the analysis in b, but instead of simulating from a discrete
@@ -194,6 +250,24 @@ expected value as $n$ increases.
 -   Plot the running mean against increasing $n$. Comment on whether the
     weak Law of Large Numbers seems to hold for this distribution.
     Explain why or why not.
+
+```{r}
+set.seed(100)
+n <- 10000
+M <- 50
+
+plot(1, type="n", xlim=c(1, n), ylim=c(-20, 20),
+  xlab = "Number of rolls",
+  ylab = "Cumulative sum",
+  main = "3.f) Law of Large Numbers")
+  
+for (i in 1:M) {
+  rolls <- rcauchy(n)
+  cum_mean <- cumsum(rolls) / 1:n
+  lines(cum_mean, col=i)
+}
+```
+There is a general trend of the running mean moving toward zero (the expected value), but occasionally a large outlier appears and dramatically affects the running mean. As a result, the weak law of large numbers does not appear to hold for the Cauchy distribution.
 
 # 4. Central limit theorem (1.5 points)
 
@@ -212,10 +286,28 @@ $$ converges to the standard normal CDF as $n\rightarrow\infty$.
 Derive the expected value of the sample mean
 $\bar X_n=\frac{X_1+X_2+\ldots+X_n}{n}$.
 
+$E(X_i) = \mu$
+$$
+E(\bar{X}_n) = E\left(\frac{1}{n} \sum_{i=1}^{n} X_i \right)
+= \frac{1}{n} \sum_{i=1}^{n} E(X_i)
+= \frac{1}{n} \cdot n\mu
+= \mu
+$$
+
 ## b.
 
 Derive the variance of the sample mean
 $\bar X_n=\frac{X_1+X_2+\ldots+X_n}{n}$.
+
+$Var(X_i) = \sigma^2$
+$$
+\mathrm{Var}(\bar{X}_n)
+= \mathrm{Var}\left(\frac{1}{n} \sum_{i=1}^{n} X_i \right)
+= \frac{1}{n^2} \mathrm{Var}\left( \sum_{i=1}^{n} X_i \right)
+= \frac{1}{n^2} \sum_{i=1}^{n} \mathrm{Var}(X_i)
+= \frac{1}{n^2} \cdot n \sigma^2
+= \frac{\sigma^2}{n}
+$$
 
 ## c.
 
@@ -237,11 +329,54 @@ where $X_i$ is the random variable giving the number in roll $i$.
     increases. Comment on whether the histograms appear to approach a
     normal distribution as $n$, illustrating the Central Limit Theorem.
 
+```{r}
+set.seed(100)
+
+# Function to simulate means
+simulate_means <- function(n, m = 100) {
+  means <- numeric(m)
+  for (i in 1:m) {
+    rolls <- sample(1:6, size = n, replace = TRUE)
+    means[i] <- mean(rolls)
+  }
+  return(means)
+}
+
+n_values <- c(100, 1000, 10000)
+
+# Layout for plots
+par(mfrow = c(1, 3))
+
+# Simulate and plot
+for (n in n_values) {
+  means <- simulate_means(n)
+  hist(means,
+    main = paste("4.c) Histogram of Sample Means (n = ", n, ")"),
+    xlab = "Sample Mean",
+    breaks = seq(3, 4, by = 0.02),
+    xlim = c(3,4))
+}
+```
+As n increases, the distribution of the sample means becomes narrower, meaning more of the sample means are close to the expected value μ = 3.5. The shape of the distribution approaches a normals distribution.
+
 ## d.
 
 Compute expected value $\mu$ and the variance $\sigma^2$ for the random
 variable $X_i$ (giving the number in die-roll $i$), which follows a
 discrete uniform distribution.
+
+```{r}
+# Dice values
+X <- 1:6
+
+# Expected value
+mu <- mean(X)
+mu
+
+# Variance
+sigma2 <- mean(X^2) - mu^2
+sigma2
+```
 
 ## e.
 
@@ -257,6 +392,41 @@ Now that you computed $\mu$ and $\sigma^2$, consider $Z_n$.
     increase. Comment on whether the distributions of $Z_n$ appear to
     approach a normal distribution, illustrating the Central Limit
     Theorem.
+
+```{r}
+set.seed(100)
+
+mu <- 3.5
+sigma <- sqrt(mean((1:6)^2) - mu^2)
+
+simulate_Zn <- function(n, m) {
+  Zn <- numeric(m)
+  
+  for (i in 1:m) {
+    rolls <- sample(1:6, n, replace = TRUE)
+    x_bar <- mean(rolls)
+    Zn[i] <- (x_bar - mu) / (sigma / sqrt(n))
+  }
+  return(Zn)
+}
+
+n_values <- c(100, 1000, 10000)
+m_values <- c(100, 1000, 10000)
+
+# 9 plots
+par(mfrow = c(3,3))
+
+for (n in n_values) {
+  for (m in m_values) {
+    Zn <- simulate_Zn(n, m)
+    hist(Zn,
+      main = paste("4.e) Zn Histogramm (n = ", n, ", M =", m, ")"),
+      xlab = "Zn",
+      breaks = 30)
+  }
+}
+```
+It is very clear, that the larger n and M are, the close the distribution of Zn approaches a normal distribution. Increasing M makes the histogram smoother, while increasing n slighlty reduces the spread.
 
 # 5. Readable and efficient code (1 points)
 
