@@ -26,6 +26,7 @@ ai_usage <- data.frame(
 )
 
 kable(ai_usage, caption = " AI Usage for Different Tasks")
+```
 
 # 1. Ratio of Fibonacci numbers (1 point)
 
