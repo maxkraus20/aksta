@@ -3,6 +3,7 @@ title: "Case Study 1"
 author: "Maximilian Kraus, Lukas Vater, Hannah Weichhart"
 subtitle: AKSTA Statistical Computing
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 header-includes: \usepackage{booktabs}
@@ -21,10 +22,12 @@ library(knitr)
 
 ai_usage <- data.frame(
   AI_usage = c("Improving existing code", "Text correction", "Help with generating plots"),
+  Task_1 = c("none", "little", "none"),
   Task_2 = c("little", "none", "none"),
   Task_3 = c("little", "medium", "heavy"),
   Task_4 = c("little", "medium", "heavy"),
-  Task_5 = c("none", "none", "none")
+  Task_5 = c("none", "none", "none"),
+  Task_6 = c("little", "little", "none")
 )
 
 kable(ai_usage, caption = " AI Usage for Different Tasks")
@@ -106,6 +109,7 @@ roh_n <- function(n){
     gamma((n-1)/2)/(gamma(1/2)*gamma((n-2)/2))}
 }
 ```
+
 ## b.
 
 Try $n = 2000$. What do you observe? Why do you think the observed
@@ -114,7 +118,10 @@ behavior happens?
 ```{r}
 roh_n(2000L)
 ```
-For large n the function returns a NaN value. This could be, because the gamma function returns inf values for those n, as the resulting number is too large for R to process.
+
+For large n the function returns a NaN value. This could be, because the
+gamma function returns inf values for those n, as the resulting number
+is too large for R to process.
 
 ## c.
 
@@ -130,7 +137,11 @@ lroh_n <- function(n){
 }
 lroh_n(2000L)
 ```
-Instead of the gamma function, here the lgamma function (the natural logarithm of gamma) is used for the calculations and afterwards the exponential function calculated. As lgamma results in lower values, R can handle these calculations better.
+
+Instead of the gamma function, here the lgamma function (the natural
+logarithm of gamma) is used for the calculations and afterwards the
+exponential function calculated. As lgamma results in lower values, R
+can handle these calculations better.
 
 ## d.
 
@@ -144,7 +155,9 @@ p <- function(){
   abline(h=0.4, col="red")}
 p()
 ```
-The limit of $\rho_n/\sqrt{n}$ for $n \rightarrow\infty$ seems to be 0.4.
+
+The limit of $\rho_n/\sqrt{n}$ for $n \rightarrow\infty$ seems to be
+0.4.
 
 # 3. Weak law of large numbers (1.5 points)
 
@@ -183,7 +196,8 @@ plot(cum_mean, type="l",
   main = "3.a) Law of Large Numbers")
 ```
 
-It can be seen, that at the first few hundred rolls the cumulative mean fluctuates and then converges towards the expected value 3.5.
+It can be seen, that at the first few hundred rolls the cumulative mean
+fluctuates and then converges towards the expected value 3.5.
 
 ## b.
 
@@ -222,7 +236,9 @@ It is 3.5
 Comment on how the running mean of the paths behaves relative to the
 expected value as $n$ increases.
 
-As shown in plot 3.b, at n=1 the running mean can take any value between 1 and 6. However, as n increases, it quickly falls within the range [3, 4] and gradually converges toward the expected value of 3.5.
+As shown in plot 3.b, at n=1 the running mean can take any value between
+1 and 6. However, as n increases, it quickly falls within the range [3,
+4] and gradually converges toward the expected value of 3.5.
 
 ## e.
 
@@ -282,7 +298,10 @@ for (i in 1:M) {
 }
 ```
 
-There is a general trend of the running mean moving toward zero (the expected value), but occasionally a large outlier appears and dramatically affects the running mean. As a result, the weak law of large numbers does not appear to hold for the Cauchy distribution.
+There is a general trend of the running mean moving toward zero (the
+expected value), but occasionally a large outlier appears and
+dramatically affects the running mean. As a result, the weak law of
+large numbers does not appear to hold for the Cauchy distribution.
 
 # 4. Central limit theorem (1.5 points)
 
@@ -301,8 +320,7 @@ $$ converges to the standard normal CDF as $n\rightarrow\infty$.
 Derive the expected value of the sample mean
 $\bar X_n=\frac{X_1+X_2+\ldots+X_n}{n}$.
 
-$E(X_i) = \mu$
-$$
+$E(X_i) = \mu$ $$
 E(\bar{X}_n) = E\left(\frac{1}{n} \sum_{i=1}^{n} X_i \right)
 = \frac{1}{n} \sum_{i=1}^{n} E(X_i)
 = \frac{1}{n} \cdot n\mu
@@ -314,8 +332,7 @@ $$
 Derive the variance of the sample mean
 $\bar X_n=\frac{X_1+X_2+\ldots+X_n}{n}$.
 
-$Var(X_i) = \sigma^2$
-$$
+$Var(X_i) = \sigma^2$ $$
 \mathrm{Var}(\bar{X}_n)
 = \mathrm{Var}\left(\frac{1}{n} \sum_{i=1}^{n} X_i \right)
 = \frac{1}{n^2} \mathrm{Var}\left( \sum_{i=1}^{n} X_i \right)
@@ -373,7 +390,9 @@ for (n in n_values) {
 }
 ```
 
-As n increases, the distribution of the sample means becomes narrower, meaning more of the sample means are close to the expected value μ = 3.5. The shape of the distribution approaches a normals distribution.
+As n increases, the distribution of the sample means becomes narrower,
+meaning more of the sample means are close to the expected value μ =
+3.5. The shape of the distribution approaches a normals distribution.
 
 ## d.
 
@@ -443,7 +462,9 @@ for (n in n_values) {
 }
 ```
 
-It is very clear, that the larger n and M are, the close the distribution of Zn approaches a normal distribution. Increasing M makes the histogram smoother, while increasing n slighlty reduces the spread.
+It is very clear, that the larger n and M are, the close the
+distribution of Zn approaches a normal distribution. Increasing M makes
+the histogram smoother, while increasing n slighlty reduces the spread.
 
 # 5. Readable and efficient code (1 points)
 
@@ -453,17 +474,25 @@ Read over the code below.
 
 Explain (in text) what the code does.
 
-The first Code fits the random, normally distributed vectors x and z by a linear model, if enough observations fulfill the required size. The x vector is then calculated with a sinusoidal function of the residuals.
+The first Code fits the random, normally distributed vectors x and z by
+a linear model, if enough observations fulfill the required size. The x
+vector is then calculated with a sinusoidal function of the residuals.
 
-The second Code performs a kind of cross validation, as one fourth of the data is first omitted for the calculation of a linear model of two random, normally distributed vectors x and y, and the predicted. For each of the predictions the RMSE is calculated.
+The second Code performs a kind of cross validation, as one fourth of
+the data is first omitted for the calculation of a linear model of two
+random, normally distributed vectors x and y, and the predicted. For
+each of the predictions the RMSE is calculated.
 
 ## b.
 
 Explain (in text) what you would change to make the code more readable.
 
-A for loop shortens the code significantly and one could easily expand the number of steps by increasing the range iterated over.
+A for loop shortens the code significantly and one could easily expand
+the number of steps by increasing the range iterated over.
 
-A for loop also shortens the code and by adding the variables nb_sets and stepsize the amount of cross-validations performed can also be easily adapted.
+A for loop also shortens the code and by adding the variables nb_sets
+and stepsize the amount of cross-validations performed can also be
+easily adapted.
 
 ## c.
 
@@ -488,6 +517,7 @@ for (i in 1:4){
 }
 x_adapted
 ```
+
 ```{r}
 set.seed(1) 
 x <- rnorm(1000)
@@ -537,6 +567,7 @@ r <- fit$residuals
 x <- 4 * sin(r) + .04
 x
 ```
+
 ```{r}
 all.equal(x, x_adapted)
 ```
