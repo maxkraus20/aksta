@@ -1,6 +1,6 @@
 ---
 title: "Case Study 2"
-author: "First Name, Last Name"
+author: "Maximilian Kraus, Lukas Vater, Hannah Weichhart"
 date: "2026-04-02"
 output: pdf_document
 ---
@@ -34,6 +34,23 @@ Load the following datasets from TUWEL and ensure that missing values are handle
   
   * `rawdata_347.txt`  which contains (estimated) net migration rate per country.
 
+```{r}
+library(tidyverse)
+
+education <- readr::read_delim('rawdata_369.txt',delim = '\n', skip = 1, col_names = F)%>%
+separate(X1, into= c('rank', 'country', 'education_expenditures', 'year'), sep = '\\s{2,}', convert = T)%>%
+select(country, education_expenditures)
+
+unemployment <- readr::read_csv('rawdata_373.csv')
+
+migration <- readr::read_delim('rawdata_347.txt', delim = '\n', skip = 1, col_names = F)%>%
+separate(X1, into = c('rank', 'country', 'net_migration_rate', 'year'), sep = '\\s{2,}', convert = T)%>%
+select(country, net_migration_rate)
+
+
+```
+
+
 
 ## b. Merging Raw Data
 
@@ -42,14 +59,35 @@ Merge the datasets using `dplyr` on a unique key and retain the union of all obs
 - What key are you using for merging?
 - Return the dimensions of the merged dataset.
 
+```{r}
+merged_ds <- full_join(education, migration, by = 'country')%>%
+full_join(unemployment, by = c('country' = 'country_name'))
+
+dim(merged_ds)
+```
+
 ## c. Enriching Data with Income Classification
 
 Obtain country income classification (low, lower-middle, upper-middle, high) from the [World Bank](https://datahelpdesk.worldbank.org/knowledgebase/articles/906519) and merge it with the dataset.
 
 - Identify common variables between datasets. Can they be used for merging? Why or why not?
 
+```{r}
+income_class<-readr::read_delim('Country_Analytical_History.csv', skip = 11, delim = ';', col_names = c('iso', 'country', '1987':'2024'))%>%
+  select(iso, country, 'income_class' = '2020')
+
+full_join(merged_ds, income_class, by = 'country')
+```
+
 - Since ISO codes are standardized, download and use the [CIA country data codes](https://www.cia.gov/the-world-factbook/references/country-data-codes/) for merging. Make sure you are not losing any of the countries in your original data set when merging.
 
+```{r}
+country_codes <- readr::read_delim('country_data_codes.csv')
+
+merged_ds%>%
+left_join(country_codes, by = c('country' = 'Name'))%>%
+full_join(income_class, by = c('GENC' = 'iso'))
+```
 
 ## d.  Adding Geographical Information
 
