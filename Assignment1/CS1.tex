@@ -1,0 +1,975 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{booktabs}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Case Study 1},
+  pdfauthor={Maximilian Kraus, Lukas Vater, Hannah Weichhart},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Case Study 1}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{AKSTA Statistical Computing}
+\author{Maximilian Kraus, Lukas Vater, Hannah Weichhart}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{1. Ratio of Fibonacci numbers (1
+point)}\label{ratio-of-fibonacci-numbers-1-point}
+
+\subsection{a.}\label{a.}
+
+Write two different R functions which return the sequence
+\(r_{i}=F_{i+1}/F_i\) for \(i=1,\ldots,n\) where \(F_i\) is the \(i\)th
+Fibonacci number, once using \texttt{for} and once using \texttt{while}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# for }
+\NormalTok{fib\_for }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(n) \{}
+\NormalTok{  f }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+  
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{3}\SpecialCharTok{:}\NormalTok{(n }\SpecialCharTok{+} \DecValTok{1}\NormalTok{)) \{}
+\NormalTok{    f[i] }\OtherTok{\textless{}{-}}\NormalTok{ f[i }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ f[i }\SpecialCharTok{{-}} \DecValTok{2}\NormalTok{]}
+\NormalTok{  \}}
+  
+  \FunctionTok{return}\NormalTok{(f[}\DecValTok{2}\SpecialCharTok{:}\NormalTok{(n }\SpecialCharTok{+} \DecValTok{1}\NormalTok{)] }\SpecialCharTok{/}\NormalTok{ f[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{n])}
+\NormalTok{\}}
+  
+\CommentTok{\# while}
+\NormalTok{fib\_while }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(n) \{}
+\NormalTok{  f }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+
+  \ControlFlowTok{while}\NormalTok{ (}\FunctionTok{length}\NormalTok{(f) }\SpecialCharTok{\textless{}}\NormalTok{ n }\SpecialCharTok{+} \DecValTok{1}\NormalTok{) \{}
+\NormalTok{    n\_jetzt }\OtherTok{\textless{}{-}} \FunctionTok{length}\NormalTok{(f)}
+\NormalTok{    f[n\_jetzt }\SpecialCharTok{+} \DecValTok{1}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ f[n\_jetzt] }\SpecialCharTok{+}\NormalTok{ f[n\_jetzt }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{]}
+\NormalTok{  \}}
+  
+  \FunctionTok{return}\NormalTok{(f[}\DecValTok{2}\SpecialCharTok{:}\NormalTok{(n }\SpecialCharTok{+} \DecValTok{1}\NormalTok{)] }\SpecialCharTok{/}\NormalTok{ f[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{n])}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{b.}\label{b.}
+
+Benchmark the two functions for \(n=200\) and \(n=2000\) (you can use
+package \textbf{microbenchmark} or package \textbf{bench} for this
+purpose). Which function is faster?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bm\_200 }\OtherTok{\textless{}{-}} \FunctionTok{microbenchmark}\NormalTok{(}\FunctionTok{fib\_for}\NormalTok{(}\DecValTok{200}\NormalTok{), }\FunctionTok{fib\_while}\NormalTok{(}\DecValTok{200}\NormalTok{), }\AttributeTok{times =} \DecValTok{100}\NormalTok{)}
+\NormalTok{bm\_2000 }\OtherTok{\textless{}{-}} \FunctionTok{microbenchmark}\NormalTok{(}\FunctionTok{fib\_for}\NormalTok{(}\DecValTok{2000}\NormalTok{), }\FunctionTok{fib\_while}\NormalTok{(}\DecValTok{2000}\NormalTok{), }\AttributeTok{times =} \DecValTok{100}\NormalTok{)}
+
+\FunctionTok{print}\NormalTok{(bm\_200)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Unit: microseconds
+##            expr   min    lq    mean median     uq     max neval
+##    fib_for(200)  64.4  77.1 156.637  86.80 112.65  5937.0   100
+##  fib_while(200) 113.1 132.3 395.754 149.25 231.00 21942.6   100
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(bm\_2000)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Unit: microseconds
+##             expr   min     lq     mean median     uq    max neval
+##    fib_for(2000) 448.2 485.75  715.851  569.9  802.6 2855.6   100
+##  fib_while(2000) 777.3 837.50 1152.849  907.0 1241.4 4250.9   100
+\end{verbatim}
+
+\subsection{c.}\label{c.}
+
+Plot the sequence for \(n=100\). For which \(n\) does it start to
+stabilize to a value? What number does the sequence converge to?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{r }\OtherTok{\textless{}{-}} \FunctionTok{fib\_for}\NormalTok{(}\DecValTok{100}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(r, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{main =} \StringTok{"fib\_for"}\NormalTok{, }\AttributeTok{xlab =} \StringTok{"n"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"value"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{CS1_files/figure-latex/unnamed-chunk-3-1.pdf}}
+
+This sequence converges to the golden ratio (\textasciitilde1.618). It
+stabilizes at \(n\) = 10.
+
+\section{2. Gamma function (1 point)}\label{gamma-function-1-point}
+
+\subsection{a.}\label{a.-1}
+
+Write a function to compute the following for \(n\) a positive integer
+using the \texttt{gamma} function in base R. \[
+\rho_n =\frac{\Gamma((n-1)/2)}{\Gamma(1/2)\Gamma((n - 2)/2)}
+\]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{roh\_n }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(n)\{}
+  \ControlFlowTok{if}\NormalTok{((}\FunctionTok{is.integer}\NormalTok{(n) }\SpecialCharTok{==} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{|}\NormalTok{ (n}\SpecialCharTok{\textless{}}\DecValTok{0}\NormalTok{))\{}
+    \FunctionTok{print}\NormalTok{(}\StringTok{\textquotesingle{}n is not a positive integer!\textquotesingle{}}\NormalTok{)\}}
+  \ControlFlowTok{else}\NormalTok{\{}
+    \FunctionTok{gamma}\NormalTok{((n}\DecValTok{{-}1}\NormalTok{)}\SpecialCharTok{/}\DecValTok{2}\NormalTok{)}\SpecialCharTok{/}\NormalTok{(}\FunctionTok{gamma}\NormalTok{(}\DecValTok{1}\SpecialCharTok{/}\DecValTok{2}\NormalTok{)}\SpecialCharTok{*}\FunctionTok{gamma}\NormalTok{((n}\DecValTok{{-}2}\NormalTok{)}\SpecialCharTok{/}\DecValTok{2}\NormalTok{))\}}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{b.}\label{b.-1}
+
+Try \(n = 2000\). What do you observe? Why do you think the observed
+behavior happens?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{roh\_n}\NormalTok{(}\DecValTok{2000}\DataTypeTok{L}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] NaN
+\end{verbatim}
+
+For large n the function returns a NaN value. This could be, because the
+gamma function returns inf values for those n, as the resulting number
+is too large for R to process.
+
+\subsection{c.}\label{c.-1}
+
+Write an implementation which can also deal with large values of
+\(n>1000\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lroh\_n }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(n)\{}
+  \ControlFlowTok{if}\NormalTok{((}\FunctionTok{is.integer}\NormalTok{(n) }\SpecialCharTok{==} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{|}\NormalTok{ (n}\SpecialCharTok{\textless{}}\DecValTok{0}\NormalTok{))\{}
+    \FunctionTok{print}\NormalTok{(}\StringTok{\textquotesingle{}n not a positive integer!\textquotesingle{}}\NormalTok{)\}}
+  \ControlFlowTok{else}\NormalTok{\{}
+    \FunctionTok{exp}\NormalTok{(}\FunctionTok{lgamma}\NormalTok{((n}\DecValTok{{-}1}\NormalTok{)}\SpecialCharTok{/}\DecValTok{2}\NormalTok{)}\SpecialCharTok{{-}}\NormalTok{(}\FunctionTok{lgamma}\NormalTok{(}\FloatTok{0.5}\NormalTok{)}\SpecialCharTok{+}\FunctionTok{lgamma}\NormalTok{((n}\DecValTok{{-}2}\NormalTok{)}\SpecialCharTok{/}\DecValTok{2}\NormalTok{)))\}}
+\NormalTok{\}}
+\FunctionTok{lroh\_n}\NormalTok{(}\DecValTok{2000}\DataTypeTok{L}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 17.83009
+\end{verbatim}
+
+Instead of the gamma function, here the lgamma function (the natural
+logarithm of gamma) is used for the calculations and afterwards the
+exponential function calculated. As lgamma results in lower values, R
+can handle these calculations better.
+
+\subsection{d.}\label{d.}
+
+Plot \(\rho_n/\sqrt{n}\) for different values of \(n\). Can you guess
+the limit of \(\rho_n/\sqrt{n}\) for \(n \rightarrow\infty\)?
+
+\pandocbounded{\includegraphics[keepaspectratio]{CS1_files/figure-latex/unnamed-chunk-7-1.pdf}}
+The limit of \(\rho_n/\sqrt{n}\) for \(n \rightarrow\infty\) seems to be
+0.4.
+
+\section{3. Weak law of large numbers (1.5
+points)}\label{weak-law-of-large-numbers-1.5-points}
+
+The law of large numbers states that if you repeat an experiment
+independently a large number of times and average the result, what you
+obtain should be close to the expected value. Formally, the weak law of
+large numbers states that if \(X_1, X_2, \ldots X_n\) are independently
+and identically distributed (iid) random variables with a finite
+expected value \(E(X_i)=\mu<\infty\), then, for any \(\epsilon > 0\)
+\(\lim_{n\rightarrow \infty} P(|\bar X_n-\mu|>\epsilon)=0\) where
+\(\bar X_n=\frac{X_1+X_2+\ldots+X_n}{n}\) is the sample mean (the sample
+mean converges in probability to the expected value).
+
+\subsection{a.}\label{a.-2}
+
+\begin{itemize}
+\item
+  In R, simulate rolling a fair 6-sided die \(n=10\,000\) times using
+  vectorized functions.
+\item
+  After each roll, compute the cumulative mean of all previous rolls.
+\item
+  Plot the running average against the number of rolls and comment on
+  the result.
+\end{itemize}
+
+\subsection{b.}\label{b.-2}
+
+\begin{itemize}
+\item
+  Replicate the die-rolling experiment \(M=50\) times using a for loop.
+  This will result in \(50\) paths which you can plot against the number
+  of rolls.
+\item
+  Plot all 50 paths on the same graph to observe the variation in the
+  running averages.
+\end{itemize}
+
+\subsection{c.}\label{c.-2}
+
+What is the theoretical expected value of a fair 6-sided die?
+
+\subsection{d.}\label{d.-1}
+
+Comment on how the running mean of the paths behaves relative to the
+expected value as \(n\) increases.
+
+\subsection{e.}\label{e.}
+
+\begin{itemize}
+\item
+  Modify the code in b. to use a while loop.
+\item
+  Stop the loop when the proportion of replications where the difference
+  between the running average and the expected value lies outside the
+  interval \([-\epsilon,\epsilon]\) is less than 0.05. Use
+  \(\epsilon = 0.01\).
+\item
+  How high is \(n\) at the end of the loop?
+\end{itemize}
+
+\subsection{f.}\label{f.}
+
+\begin{itemize}
+\item
+  Repeat the analysis in b, but instead of simulating from a discrete
+  uniform distribution, simulate from a continuous standard cauchy
+  distribution using \texttt{rcauchy()}. The (standard) cauchy
+  distribution arises from the ratio of two independent mean zero
+  (standard) normally distributed random variables.
+\item
+  Plot the running mean against increasing \(n\). Comment on whether the
+  weak Law of Large Numbers seems to hold for this distribution. Explain
+  why or why not.
+\end{itemize}
+
+\section{4. Central limit theorem (1.5
+points)}\label{central-limit-theorem-1.5-points}
+
+The central limit theorem states that, under certain conditions, the sum
+of a large number of random variables is approximately normal. Consider
+the case where \(X_1, X_2,\ldots,X_n\) are i.i.d. random variables with
+finite expected values (\(E(X_i)=\mu<\infty\)) and variances
+\((Var(X_i)=\sigma^2<\infty)\). The central limit theorem states that
+the cumulative distribution function (CDF) of the normalized random
+variable \[
+Z_n = \frac{\bar X_n - \mu}{\sigma/\sqrt{n}}
+\] converges to the standard normal CDF as \(n\rightarrow\infty\).
+
+\subsection{a.}\label{a.-3}
+
+Derive the expected value of the sample mean
+\(\bar X_n=\frac{X_1+X_2+\ldots+X_n}{n}\).
+
+\subsection{b.}\label{b.-3}
+
+Derive the variance of the sample mean
+\(\bar X_n=\frac{X_1+X_2+\ldots+X_n}{n}\).
+
+\subsection{c.}\label{c.-3}
+
+The central limit theorem makes few assumption on the distribution of
+the random variables \(X_i\). Consider again the die-rolling experiment
+where \(X_i\) is the random variable giving the number in roll \(i\).
+
+\begin{itemize}
+\item
+  Simulate Die Rolls: For each value of \(n\) (where
+  \(n=\{100,1000,10000\}\)), simulate rolling a die \(n\) times. Record
+  the mean of the \(n\) rolls.
+\item
+  Repeat the above process \(M=100\) times for each value of \(n\). This
+  will give you 100 sample means for each \(n\).
+\item
+  Plot a histogram of the 100 sample means for each value of \(n\).
+  Observe the shape of the histograms.
+\item
+  Discuss how the distribution of the sample means changes as \(n\)
+  increases. Comment on whether the histograms appear to approach a
+  normal distribution as \(n\), illustrating the Central Limit Theorem.
+\end{itemize}
+
+\subsection{d.}\label{d.-2}
+
+Compute expected value \(\mu\) and the variance \(\sigma^2\) for the
+random variable \(X_i\) (giving the number in die-roll \(i\)), which
+follows a discrete uniform distribution.
+
+\subsection{e.}\label{e.-1}
+
+Now that you computed \(\mu\) and \(\sigma^2\), consider \(Z_n\).
+
+\begin{itemize}
+\item
+  For each value of \(n\) (where \(n=\{100,1000,10000\}\)) and for
+  \(M=\{100,1000,10000\}\) replications, simulate the rolling of \(n\)
+  dice and calculate the \(Z_n\).
+\item
+  Plot histograms of \(Z_n\) for each combination of \(n\) and \(M\).
+\item
+  Discuss how the distribution of \(Z_n\) changes as \(n\) and \(M\)
+  increase. Comment on whether the distributions of \(Z_n\) appear to
+  approach a normal distribution, illustrating the Central Limit
+  Theorem.
+\end{itemize}
+
+\section{5. Readable and efficient code (1
+points)}\label{readable-and-efficient-code-1-points}
+
+Read over the code below.
+
+\subsection{a.}\label{a.-4}
+
+Explain (in text) what the code does.
+
+The first Code fits the random, normally distributed vectors x and z by
+a linear model, if enough observations fulfill the required size. The x
+vector is then calculated with a sinusoidal function of the residuals.
+
+The second Code performs a kind of cross validation, as one fourth of
+the data is first omitted for the calculation of a linear model of two
+random, normally distributed vectors x and y, and the predicted. For
+each of the predictions the RMSE is calculated.
+
+\subsection{b.}\label{b.-4}
+
+Explain (in text) what you would change to make the code more readable.
+
+A for loop shortens the code significantly and one could easily expand
+the number of steps by increasing the range iterated over.
+
+A for loop also shortens the code and by adding the variables nb\_sets
+and stepsize the amount of cross-validations performed can also be
+easily adapted.
+
+\subsection{c.}\label{c.-4}
+
+Change the code according to b. and wrap it in a function. This function
+should have at most 10 lines (without adding commands to more lines such
+as \texttt{x\ \textless{}-\ 1;\ y\ \textless{}-\ 2}. Such commands will
+count as 2 lines!). Check that the function called on the same input
+outputs the same as the provided code.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{x }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{)}
+\NormalTok{z }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{)}
+\CommentTok{\#Adapted Code 1}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{)\{}
+  \ControlFlowTok{if}\NormalTok{(}\FunctionTok{sum}\NormalTok{(x }\SpecialCharTok{\textgreater{}=} \FloatTok{0.001}\SpecialCharTok{*}\NormalTok{i)}\SpecialCharTok{\textless{}}\NormalTok{i)\{}
+    \FunctionTok{stop}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"step"}\NormalTok{, i,}\StringTok{"requires"}\NormalTok{,i,}\StringTok{"observation(s) with value \textgreater{}="}\NormalTok{, }\FloatTok{0.001}\SpecialCharTok{*}\NormalTok{i))}
+\NormalTok{  \}}
+\NormalTok{  fit }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(x }\SpecialCharTok{\textasciitilde{}}\NormalTok{ z)}
+\NormalTok{  r }\OtherTok{\textless{}{-}}\NormalTok{ fit}\SpecialCharTok{$}\NormalTok{residuals}
+\NormalTok{  x }\OtherTok{\textless{}{-}}\NormalTok{ i}\SpecialCharTok{*}\FunctionTok{sin}\NormalTok{(r) }\SpecialCharTok{+}\NormalTok{ i}\SpecialCharTok{*}\FloatTok{0.01}
+\NormalTok{\}}
+\NormalTok{x}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          1          2          3          4          5          6          7 
+## -1.0992886  1.4796352 -0.6516207  0.7865093  3.7873388 -0.2055179  3.8327000 
+##          8          9         10         11         12         13         14 
+##  2.0871822  3.2219962 -3.0933769  0.6399144  4.0325676 -0.7808135 -0.8326365 
+##         15         16         17         18         19         20         21 
+##  0.7073736 -3.2414091 -2.8376440  0.9776866  1.5608532  3.0227535  1.0117977 
+##         22         23         24         25         26         27         28 
+##  1.8922308 -1.0474880 -0.4636773  2.8222909 -3.4535959 -3.9591095 -0.5208395 
+##         29         30         31         32         33         34         35 
+## -1.9366900  4.0313764  0.7254867 -3.7758444  4.0170200 -3.2639844 -0.4572754 
+##         36         37         38         39         40         41         42 
+## -2.5234159 -2.5371644 -3.4025549  0.6499197  1.7909888 -3.9557224 -3.5524879 
+##         43         44         45         46         47         48         49 
+##  2.0066135  3.2915276 -0.9643167 -0.8508112  3.8888448  1.7701559 -3.8041387 
+##         50         51         52         53         54         55         56 
+##  0.9535984  4.0340296 -1.0616984  3.8507707 -0.6058260  0.4776386  0.5361922 
+##         57         58         59         60         61         62         63 
+## -2.6133980 -0.5347483  3.0972939 -3.9543801  1.0621806 -3.1799992  2.4340472 
+##         64         65         66         67         68         69         70 
+## -2.1800910 -0.7436082  1.3185751 -0.4879213  0.4959666  0.8098709  0.7497175 
+##         71         72         73         74         75         76         77 
+##  3.9472930 -0.6991699  2.9570004 -0.4460233 -0.5400743  3.3793674 -1.9905970 
+##         78         79         80         81         82         83         84 
+## -2.7888504 -1.2126583 -0.9658716 -1.4647239 -3.9458928  0.7544273 -0.7574175 
+##         85         86         87         88         89         90         91 
+##  3.0949240  3.7880760  1.0486519 -3.3233027  3.9897095  3.1324172 -1.4436191 
+##         92         93         94         95         96         97         98 
+##  0.7777796  0.5976052  2.3300564  0.5549268  3.2229364 -0.2445148 -1.4071426 
+##         99        100 
+## -0.4052558 -1.9274082
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{) }
+\NormalTok{x }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1000}\NormalTok{)}
+\NormalTok{y }\OtherTok{\textless{}{-}} \DecValTok{2} \SpecialCharTok{+}\NormalTok{ x }\SpecialCharTok{+} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1000}\NormalTok{)}
+\NormalTok{df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(x, y)}
+\CommentTok{\#adapted Code 2}
+\NormalTok{nb\_sets }\OtherTok{\textless{}{-}} \DecValTok{4}
+\NormalTok{stepsize }\OtherTok{\textless{}{-}} \FunctionTok{nrow}\NormalTok{(df)}\SpecialCharTok{/}\NormalTok{nb\_sets}
+\ControlFlowTok{for}\NormalTok{ (j }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{nb\_sets)\{}
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"Step"}\NormalTok{, j, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{  section }\OtherTok{\textless{}{-}}\NormalTok{ (}\DecValTok{1}\SpecialCharTok{+}\NormalTok{stepsize}\SpecialCharTok{*}\NormalTok{(j}\DecValTok{{-}1}\NormalTok{))}\SpecialCharTok{:}\NormalTok{(stepsize}\SpecialCharTok{*}\NormalTok{j)}
+\NormalTok{  fit }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(y}\SpecialCharTok{\textasciitilde{}}\NormalTok{x, }\AttributeTok{data =}\NormalTok{ df[}\SpecialCharTok{{-}}\NormalTok{section,])}
+\NormalTok{  p1 }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(fit, }\AttributeTok{newdata =}\NormalTok{ df[section,])}
+\NormalTok{  r }\OtherTok{\textless{}{-}} \FunctionTok{sqrt}\NormalTok{(}\FunctionTok{mean}\NormalTok{((p1 }\SpecialCharTok{{-}}\NormalTok{ df[section, }\StringTok{\textquotesingle{}y\textquotesingle{}}\NormalTok{])}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{))}
+  \FunctionTok{print}\NormalTok{(r)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Step 1 
+## [1] 1.024996
+## Step 2 
+## [1] 0.9952113
+## Step 3 
+## [1] 1.06855
+## Step 4 
+## [1] 1.070726
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{x }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{)}
+\NormalTok{z }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{)}
+\ControlFlowTok{if}\NormalTok{ (}\FunctionTok{sum}\NormalTok{(x }\SpecialCharTok{\textgreater{}=}\NormalTok{ .}\DecValTok{001}\NormalTok{) }\SpecialCharTok{\textless{}} \DecValTok{1}\NormalTok{) \{}
+  \FunctionTok{stop}\NormalTok{(}\StringTok{"step 1 requires 1 observation(s) with value \textgreater{}= .001"}\NormalTok{)}
+\NormalTok{\}}
+\NormalTok{fit }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(x }\SpecialCharTok{\textasciitilde{}}\NormalTok{ z)}
+\NormalTok{r }\OtherTok{\textless{}{-}}\NormalTok{ fit}\SpecialCharTok{$}\NormalTok{residuals}
+\NormalTok{x }\OtherTok{\textless{}{-}} \FunctionTok{sin}\NormalTok{(r) }\SpecialCharTok{+}\NormalTok{ .}\DecValTok{01}
+\ControlFlowTok{if}\NormalTok{ (}\FunctionTok{sum}\NormalTok{(x }\SpecialCharTok{\textgreater{}=}\NormalTok{ .}\DecValTok{002}\NormalTok{) }\SpecialCharTok{\textless{}} \DecValTok{2}\NormalTok{) \{}
+  \FunctionTok{stop}\NormalTok{(}\StringTok{"step 2 requires 2 observation(s) with value \textgreater{}= .002"}\NormalTok{)}
+\NormalTok{\}}
+\NormalTok{fit }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(x }\SpecialCharTok{\textasciitilde{}}\NormalTok{ z)}
+\NormalTok{r }\OtherTok{\textless{}{-}}\NormalTok{ fit}\SpecialCharTok{$}\NormalTok{residuals}
+\NormalTok{x }\OtherTok{\textless{}{-}} \DecValTok{2} \SpecialCharTok{*} \FunctionTok{sin}\NormalTok{(r) }\SpecialCharTok{+}\NormalTok{ .}\DecValTok{02}
+\ControlFlowTok{if}\NormalTok{ (}\FunctionTok{sum}\NormalTok{(x }\SpecialCharTok{\textgreater{}=}\NormalTok{ .}\DecValTok{003}\NormalTok{) }\SpecialCharTok{\textless{}} \DecValTok{3}\NormalTok{) \{}
+  \FunctionTok{stop}\NormalTok{(}\StringTok{"step 3 requires 3 observation(s) with value \textgreater{}= .003"}\NormalTok{)}
+\NormalTok{\}}
+\NormalTok{fit }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(x }\SpecialCharTok{\textasciitilde{}}\NormalTok{ z)}
+\NormalTok{r }\OtherTok{\textless{}{-}}\NormalTok{ fit}\SpecialCharTok{$}\NormalTok{residuals}
+\NormalTok{x }\OtherTok{\textless{}{-}} \DecValTok{3} \SpecialCharTok{*} \FunctionTok{sin}\NormalTok{(r) }\SpecialCharTok{+}\NormalTok{ .}\DecValTok{03}
+\ControlFlowTok{if}\NormalTok{ (}\FunctionTok{sum}\NormalTok{(x }\SpecialCharTok{\textgreater{}=}\NormalTok{ .}\DecValTok{004}\NormalTok{) }\SpecialCharTok{\textless{}} \DecValTok{4}\NormalTok{) \{}
+  \FunctionTok{stop}\NormalTok{(}\StringTok{"step 4 requires 4 observation(s) with value \textgreater{}= .004"}\NormalTok{)}
+\NormalTok{\}}
+\NormalTok{fit }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(x }\SpecialCharTok{\textasciitilde{}}\NormalTok{ z)}
+\NormalTok{r }\OtherTok{\textless{}{-}}\NormalTok{ fit}\SpecialCharTok{$}\NormalTok{residuals}
+\NormalTok{x }\OtherTok{\textless{}{-}} \DecValTok{4} \SpecialCharTok{*} \FunctionTok{sin}\NormalTok{(r) }\SpecialCharTok{+}\NormalTok{ .}\DecValTok{04}
+\NormalTok{x}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{) }
+\NormalTok{x }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1000}\NormalTok{)}
+\NormalTok{y }\OtherTok{\textless{}{-}} \DecValTok{2} \SpecialCharTok{+}\NormalTok{ x }\SpecialCharTok{+} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1000}\NormalTok{)}
+\NormalTok{df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(x, y)}
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Step"}\NormalTok{, }\DecValTok{1}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{fit1 }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{data =}\NormalTok{ df[}\SpecialCharTok{{-}}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{250}\NormalTok{),])}
+\NormalTok{p1 }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(fit1, }\AttributeTok{newdata =}\NormalTok{ df[(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{250}\NormalTok{),])}
+\NormalTok{r }\OtherTok{\textless{}{-}} \FunctionTok{sqrt}\NormalTok{(}\FunctionTok{mean}\NormalTok{((p1 }\SpecialCharTok{{-}}\NormalTok{ df[(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{250}\NormalTok{),}\StringTok{"y"}\NormalTok{])}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{))  }
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Step"}\NormalTok{, }\DecValTok{2}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{fit2 }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{data =}\NormalTok{ df[}\SpecialCharTok{{-}}\NormalTok{(}\DecValTok{251}\SpecialCharTok{:}\DecValTok{500}\NormalTok{),])}
+\NormalTok{p2 }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(fit2, }\AttributeTok{newdata =}\NormalTok{ df[(}\DecValTok{251}\SpecialCharTok{:}\DecValTok{500}\NormalTok{),])}
+\NormalTok{r }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(r, }\FunctionTok{sqrt}\NormalTok{(}\FunctionTok{mean}\NormalTok{((p2 }\SpecialCharTok{{-}}\NormalTok{ df[(}\DecValTok{251}\SpecialCharTok{:}\DecValTok{500}\NormalTok{),}\StringTok{"y"}\NormalTok{])}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)))}
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Step"}\NormalTok{, }\DecValTok{3}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{fit3 }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{data =}\NormalTok{ df[}\SpecialCharTok{{-}}\NormalTok{(}\DecValTok{501}\SpecialCharTok{:}\DecValTok{750}\NormalTok{),])}
+\NormalTok{p3 }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(fit3, }\AttributeTok{newdata =}\NormalTok{ df[(}\DecValTok{501}\SpecialCharTok{:}\DecValTok{750}\NormalTok{),])}
+\NormalTok{r }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(r, }\FunctionTok{sqrt}\NormalTok{(}\FunctionTok{mean}\NormalTok{((p3 }\SpecialCharTok{{-}}\NormalTok{ df[(}\DecValTok{501}\SpecialCharTok{:}\DecValTok{750}\NormalTok{),}\StringTok{"y"}\NormalTok{])}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)))}
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Step"}\NormalTok{, }\DecValTok{4}\NormalTok{, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{fit4 }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{data =}\NormalTok{ df[}\SpecialCharTok{{-}}\NormalTok{(}\DecValTok{751}\SpecialCharTok{:}\DecValTok{1000}\NormalTok{),])}
+\NormalTok{p4 }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(fit4, }\AttributeTok{newdata =}\NormalTok{ df[(}\DecValTok{751}\SpecialCharTok{:}\DecValTok{1000}\NormalTok{),])}
+\NormalTok{r }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(r, }\FunctionTok{sqrt}\NormalTok{(}\FunctionTok{mean}\NormalTok{((p4 }\SpecialCharTok{{-}}\NormalTok{ df[(}\DecValTok{751}\SpecialCharTok{:}\DecValTok{1000}\NormalTok{),}\StringTok{"y"}\NormalTok{])}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)))  }
+\NormalTok{r}
+\end{Highlighting}
+\end{Shaded}
+
+\section{6. Measuring and improving performance (2
+points)}\label{measuring-and-improving-performance-2-points}
+
+Have a look at the code of the function below. It is a function for
+performing a Kruskal-Wallis test, a robust non-parametric method for
+testing whether samples come from the same distribution. (Note: we
+assume no missing values are present in \texttt{x}).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{kwtest }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{ (x, g, ...) }
+\NormalTok{\{}
+    \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{is.list}\NormalTok{(x)) \{}
+        \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{length}\NormalTok{(x) }\SpecialCharTok{\textless{}} \DecValTok{2}\DataTypeTok{L}\NormalTok{) }
+            \FunctionTok{stop}\NormalTok{(}\StringTok{"\textquotesingle{}x\textquotesingle{} must be a list with at least 2 elements"}\NormalTok{)}
+        \ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\FunctionTok{missing}\NormalTok{(g)) }
+            \FunctionTok{warning}\NormalTok{(}\StringTok{"\textquotesingle{}x\textquotesingle{} is a list, so ignoring argument \textquotesingle{}g\textquotesingle{}"}\NormalTok{)}
+        \ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\FunctionTok{all}\NormalTok{(}\FunctionTok{sapply}\NormalTok{(x, is.numeric))) }
+            \FunctionTok{warning}\NormalTok{(}\StringTok{"some elements of \textquotesingle{}x\textquotesingle{} are not numeric and will be coerced to numeric"}\NormalTok{)}
+\NormalTok{        k }\OtherTok{\textless{}{-}} \FunctionTok{length}\NormalTok{(x)}
+\NormalTok{        l }\OtherTok{\textless{}{-}} \FunctionTok{lengths}\NormalTok{(x)}
+        \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{any}\NormalTok{(l }\SpecialCharTok{==} \DecValTok{0}\DataTypeTok{L}\NormalTok{)) }
+            \FunctionTok{stop}\NormalTok{(}\StringTok{"all groups must contain data"}\NormalTok{)}
+\NormalTok{        g }\OtherTok{\textless{}{-}} \FunctionTok{factor}\NormalTok{(}\FunctionTok{rep.int}\NormalTok{(}\FunctionTok{seq\_len}\NormalTok{(k), l))}
+\NormalTok{        x }\OtherTok{\textless{}{-}} \FunctionTok{unlist}\NormalTok{(x)}
+\NormalTok{    \}}
+    \ControlFlowTok{else}\NormalTok{ \{}
+        \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{length}\NormalTok{(x) }\SpecialCharTok{!=} \FunctionTok{length}\NormalTok{(g)) }
+            \FunctionTok{stop}\NormalTok{(}\StringTok{"\textquotesingle{}x\textquotesingle{} and \textquotesingle{}g\textquotesingle{} must have the same length"}\NormalTok{)}
+\NormalTok{        g }\OtherTok{\textless{}{-}} \FunctionTok{factor}\NormalTok{(g)}
+\NormalTok{        k }\OtherTok{\textless{}{-}} \FunctionTok{nlevels}\NormalTok{(g)}
+        \ControlFlowTok{if}\NormalTok{ (k }\SpecialCharTok{\textless{}} \DecValTok{2}\DataTypeTok{L}\NormalTok{) }
+            \FunctionTok{stop}\NormalTok{(}\StringTok{"all observations are in the same group"}\NormalTok{)}
+\NormalTok{    \}}
+\NormalTok{    n }\OtherTok{\textless{}{-}} \FunctionTok{length}\NormalTok{(x)}
+    \ControlFlowTok{if}\NormalTok{ (n }\SpecialCharTok{\textless{}} \DecValTok{2}\DataTypeTok{L}\NormalTok{) }
+        \FunctionTok{stop}\NormalTok{(}\StringTok{"not enough observations"}\NormalTok{)}
+\NormalTok{    r }\OtherTok{\textless{}{-}} \FunctionTok{rank}\NormalTok{(x)}
+\NormalTok{    TIES }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(x)}
+\NormalTok{    STATISTIC }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(}\FunctionTok{tapply}\NormalTok{(r, g, sum)}\SpecialCharTok{\^{}}\DecValTok{2}\SpecialCharTok{/}\FunctionTok{tapply}\NormalTok{(r, g, length))}
+\NormalTok{    STATISTIC }\OtherTok{\textless{}{-}}\NormalTok{ ((}\DecValTok{12} \SpecialCharTok{*}\NormalTok{ STATISTIC}\SpecialCharTok{/}\NormalTok{(n }\SpecialCharTok{*}\NormalTok{ (n }\SpecialCharTok{+} \DecValTok{1}\NormalTok{)) }\SpecialCharTok{{-}} \DecValTok{3} \SpecialCharTok{*}\NormalTok{ (n }\SpecialCharTok{+} \DecValTok{1}\NormalTok{))}\SpecialCharTok{/}\NormalTok{(}\DecValTok{1} \SpecialCharTok{{-}} 
+        \FunctionTok{sum}\NormalTok{(TIES}\SpecialCharTok{\^{}}\DecValTok{3} \SpecialCharTok{{-}}\NormalTok{ TIES)}\SpecialCharTok{/}\NormalTok{(n}\SpecialCharTok{\^{}}\DecValTok{3} \SpecialCharTok{{-}}\NormalTok{ n)))}
+\NormalTok{    PARAMETER }\OtherTok{\textless{}{-}}\NormalTok{ k }\SpecialCharTok{{-}} \DecValTok{1}\DataTypeTok{L}
+\NormalTok{    PVAL }\OtherTok{\textless{}{-}} \FunctionTok{pchisq}\NormalTok{(STATISTIC, PARAMETER, }\AttributeTok{lower.tail =} \ConstantTok{FALSE}\NormalTok{)}
+    \FunctionTok{names}\NormalTok{(STATISTIC) }\OtherTok{\textless{}{-}} \StringTok{"Kruskal{-}Wallis chi{-}squared"}
+    \FunctionTok{names}\NormalTok{(PARAMETER) }\OtherTok{\textless{}{-}} \StringTok{"df"}
+\NormalTok{    RVAL }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}\AttributeTok{statistic =}\NormalTok{ STATISTIC, }\AttributeTok{parameter =}\NormalTok{ PARAMETER, }
+        \AttributeTok{p.value =}\NormalTok{ PVAL, }\AttributeTok{method =} \StringTok{"Kruskal{-}Wallis rank sum test"}\NormalTok{)}
+    \FunctionTok{return}\NormalTok{(RVAL)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{a.}\label{a.-5}
+
+Write a pseudo code outlining what the function does.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Input-Handling/Validation
+
+  IF x is a list:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Check for having at least 2 elements and if all elements are numeric
+  \item
+    Ensure that no element is empty
+  \item
+    Create a grouping factor
+  \item
+    Flatten list into a single vector
+  \end{itemize}
+
+  ELSE IF x is a vector:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Ensure x and g have the same length
+  \item
+    Convert g into a factor
+  \item
+    Check for at least 2 groups
+  \end{itemize}
+\item
+  Pre-processing
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  Confirm that total number fo observations is \textgreater=2
+\item
+  Assign ranks to all values
+\item
+  Identify ties
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  Statistical calculation
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  Calculate the sum of ranks for each group
+\item
+  Compute the Kruskal-Wallis test statistic
+\item
+  Adjust the statistic
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  Significance test
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  Determine degrees of freedom
+\item
+  Calculate p-value
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  Output
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  Combine the statistic
+\item
+  Return list
+\end{itemize}
+
+\subsection{b.}\label{b.-5}
+
+For example data, call the function in two ways: once using \texttt{x}
+as a list and once using \texttt{x} as a vector with a corresponding
+\texttt{g} argument. Ensure that the two different function calls return
+the same thing by aligning the inputs.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# input as list}
+\NormalTok{x\_list }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}
+  \AttributeTok{group1 =} \FunctionTok{c}\NormalTok{(}\FloatTok{2.4}\NormalTok{, }\FloatTok{2.8}\NormalTok{, }\FloatTok{3.0}\NormalTok{),}
+  \AttributeTok{group2 =} \FunctionTok{c}\NormalTok{(}\FloatTok{3.5}\NormalTok{, }\FloatTok{3.8}\NormalTok{, }\FloatTok{4.0}\NormalTok{),}
+  \AttributeTok{group3 =} \FunctionTok{c}\NormalTok{(}\FloatTok{4.5}\NormalTok{, }\FloatTok{4.9}\NormalTok{, }\FloatTok{5.1}\NormalTok{)}
+\NormalTok{)}
+
+\CommentTok{\# input as vector}
+\NormalTok{x\_vector }\OtherTok{=} \FunctionTok{c}\NormalTok{(}\FloatTok{2.4}\NormalTok{, }\FloatTok{2.8}\NormalTok{, }\FloatTok{3.0}\NormalTok{, }\FloatTok{3.5}\NormalTok{, }\FloatTok{3.8}\NormalTok{, }\FloatTok{4.0}\NormalTok{, }\FloatTok{4.5}\NormalTok{, }\FloatTok{4.9}\NormalTok{, }\FloatTok{5.1}\NormalTok{)}
+\NormalTok{g\_vector }\OtherTok{=} \FunctionTok{factor}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"group1"}\NormalTok{, }\StringTok{"group1"}\NormalTok{, }\StringTok{"group1"}\NormalTok{,}
+                    \StringTok{"group2"}\NormalTok{, }\StringTok{"group2"}\NormalTok{, }\StringTok{"group2"}\NormalTok{,}
+                    \StringTok{"group3"}\NormalTok{, }\StringTok{"group3"}\NormalTok{, }\StringTok{"group3"}\NormalTok{))}
+
+\NormalTok{result\_list }\OtherTok{\textless{}{-}} \FunctionTok{kwtest}\NormalTok{(x\_list)}
+\NormalTok{result\_vector }\OtherTok{\textless{}{-}} \FunctionTok{kwtest}\NormalTok{(x\_vector, g\_vector)}
+
+\CommentTok{\# check if the outputs are equal}
+\FunctionTok{all.equal}\NormalTok{(result\_list, result\_vector)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] TRUE
+\end{verbatim}
+
+\subsection{c.}\label{c.-5}
+
+Make a faster version of \texttt{kwtest()} that only computes the
+Kruskal-Wallis \textbf{test statistic} when the input is a numeric
+variable \texttt{x} and a variable \texttt{g} which gives the group
+membership. You can try simplifying the function above or by coding from
+the mathematical definition (see
+\url{https://en.wikipedia.org/wiki/Kruskal\%E2\%80\%93Wallis_one-way_analysis_of_variance}).
+This function should also perform some checks to ensure the correctness
+of the inputs (use \texttt{kwtest()} as inspiration).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{kwfast }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x, g) \{}
+  
+  \CommentTok{\# basic checks}
+  \ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\FunctionTok{is.numeric}\NormalTok{(x)) \{}
+\NormalTok{    x }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(x)}
+\NormalTok{  \}}
+  
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{length}\NormalTok{(x) }\SpecialCharTok{!=} \FunctionTok{length}\NormalTok{(g)) \{}
+    \FunctionTok{stop}\NormalTok{(}\StringTok{"\textquotesingle{}x\textquotesingle{} and \textquotesingle{}g\textquotesingle{} must have the same length"}\NormalTok{)}
+\NormalTok{  \}}
+  
+  \CommentTok{\# identify groups}
+\NormalTok{  g }\OtherTok{\textless{}{-}} \FunctionTok{as.factor}\NormalTok{(g)}
+\NormalTok{  n }\OtherTok{\textless{}{-}} \FunctionTok{length}\NormalTok{(x)}
+\NormalTok{  k }\OtherTok{\textless{}{-}} \FunctionTok{nlevels}\NormalTok{(g)}
+  
+  \CommentTok{\# pre{-}processing}
+\NormalTok{  r }\OtherTok{\textless{}{-}} \FunctionTok{rank}\NormalTok{(x)}
+  
+  \CommentTok{\# stat calculation}
+\NormalTok{  rank\_sums }\OtherTok{\textless{}{-}} \FunctionTok{rowsum}\NormalTok{(r, g)}
+\NormalTok{  group\_sizes }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{table}\NormalTok{(g))}
+  
+  \CommentTok{\# kruskal{-}wallis formula}
+\NormalTok{  statistic }\OtherTok{\textless{}{-}}\NormalTok{ (}\DecValTok{12} \SpecialCharTok{/}\NormalTok{ (n }\SpecialCharTok{*}\NormalTok{ (n }\SpecialCharTok{+} \DecValTok{1}\NormalTok{))) }\SpecialCharTok{*} \FunctionTok{sum}\NormalTok{(rank\_sums}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{/}\NormalTok{ group\_sizes) }\SpecialCharTok{{-}} \DecValTok{3} \SpecialCharTok{*}\NormalTok{ (n }\SpecialCharTok{+} \DecValTok{1}\NormalTok{)}
+  
+  \FunctionTok{return}\NormalTok{(statistic)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{d.}\label{d.-3}
+
+Consider the following scenario. You have samples available from
+multiple experiments \(m=1000\) where you collect the numerical values
+for the quantity of interest \texttt{x} and the group membership for
+\(n\) individuals. The first \(20\) individuals in each sample belong to
+group 1, the following \(20\) individuals in each sample belong to group
+2, the last \(10\) individuals in each sample belong to group 3. Use the
+following code to simulate such a data structure:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
+\NormalTok{m }\OtherTok{\textless{}{-}} \DecValTok{1000} \CommentTok{\# number of repetitions}
+\NormalTok{n }\OtherTok{\textless{}{-}} \DecValTok{50}   \CommentTok{\# number of individuals}
+\NormalTok{X }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\FunctionTok{rt}\NormalTok{(m }\SpecialCharTok{*}\NormalTok{ n, }\AttributeTok{df =} \DecValTok{10}\NormalTok{), }\AttributeTok{nrow =}\NormalTok{ m)}
+\NormalTok{grp }\OtherTok{\textless{}{-}} \FunctionTok{rep}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{, }\FunctionTok{c}\NormalTok{(}\DecValTok{20}\NormalTok{, }\DecValTok{20}\NormalTok{, }\DecValTok{10}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+Write a function which performs the Kruskal-Wallis test using the
+function \texttt{stats:::kruskal.test.default()} for \(m\) repeated
+experiments and returns a vector of \(m\) test statistics. The input of
+this function are a matrix \texttt{X} with \(m\) rows and \(n\) columns
+and a vector \texttt{g} which gives the grouping.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{run\_kruskal\_default }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(X, g) \{}
+  
+\NormalTok{  results }\OtherTok{\textless{}{-}} \FunctionTok{apply}\NormalTok{(X, }\DecValTok{1}\NormalTok{, }\ControlFlowTok{function}\NormalTok{(row) \{}
+    
+\NormalTok{    test\_obj }\OtherTok{\textless{}{-}}\NormalTok{ stats}\SpecialCharTok{:::}\FunctionTok{kruskal.test.default}\NormalTok{(row, g)}
+    
+    \FunctionTok{return}\NormalTok{(test\_obj}\SpecialCharTok{$}\NormalTok{statistic)}
+\NormalTok{  \})}
+  
+  \FunctionTok{return}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(results))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{e.}\label{e.-2}
+
+Write a function which performs the Kruskal-Wallis test using the
+function in point c.~for \(m\) repeated experiments and returns a vector
+of \(m\) test statistics. The input of this function are a matrix
+\texttt{X} with \(m\) rows and \(n\) columns and a vector \texttt{g}
+which gives the grouping.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{run\_kruskal\_fast }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(X, g) \{}
+  
+\NormalTok{  results }\OtherTok{\textless{}{-}} \FunctionTok{apply}\NormalTok{(X, }\DecValTok{1}\NormalTok{, }\ControlFlowTok{function}\NormalTok{(row) \{}
+    
+    \FunctionTok{kwfast}\NormalTok{(}\AttributeTok{x =}\NormalTok{ row, }\AttributeTok{g =}\NormalTok{ g)}
+\NormalTok{  \})}
+  
+  \FunctionTok{return}\NormalTok{(results)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{f.}\label{f.-1}
+
+Compare the performance of the two approaches using a benchmarking
+package on the data generated above. Comment on the results.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{performance\_comparison }\OtherTok{\textless{}{-}} \FunctionTok{microbenchmark}\NormalTok{(}
+  \AttributeTok{default\_method =} \FunctionTok{run\_kruskal\_default}\NormalTok{(X, grp),}
+  \AttributeTok{fast\_method    =} \FunctionTok{run\_kruskal\_fast}\NormalTok{(X, grp),}
+  \AttributeTok{times =} \DecValTok{100}
+\NormalTok{)}
+
+\FunctionTok{print}\NormalTok{(performance\_comparison)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Unit: milliseconds
+##            expr      min       lq     mean   median       uq      max neval
+##  default_method 365.8609 622.4876 858.0973 703.6735 818.1578 5429.248   100
+##     fast_method 133.0536 208.8754 302.1371 248.1200 294.6087 2140.020   100
+\end{verbatim}
+
+The fast method is roughly 2.5 times faster than the default method.
+
+\subsection{g.}\label{g.}
+
+Now consider vectorizing the function in point c.~Compare this approach
+to the other two. Comment on the results.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{run\_kruskal\_vec }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(X, g) \{}
+\NormalTok{  n }\OtherTok{\textless{}{-}} \FunctionTok{ncol}\NormalTok{(X)}
+\NormalTok{  m }\OtherTok{\textless{}{-}} \FunctionTok{nrow}\NormalTok{(X)}
+  
+\NormalTok{  R }\OtherTok{\textless{}{-}} \FunctionTok{t}\NormalTok{(}\FunctionTok{apply}\NormalTok{(X, }\DecValTok{1}\NormalTok{, rank))}
+  
+\NormalTok{  R\_sum1 }\OtherTok{\textless{}{-}} \FunctionTok{rowSums}\NormalTok{(R[, g }\SpecialCharTok{==} \DecValTok{1}\NormalTok{])}
+\NormalTok{  R\_sum2 }\OtherTok{\textless{}{-}} \FunctionTok{rowSums}\NormalTok{(R[, g }\SpecialCharTok{==} \DecValTok{2}\NormalTok{])}
+\NormalTok{  R\_sum3 }\OtherTok{\textless{}{-}} \FunctionTok{rowSums}\NormalTok{(R[, g }\SpecialCharTok{==} \DecValTok{3}\NormalTok{])}
+  
+\NormalTok{  H\_vec }\OtherTok{\textless{}{-}}\NormalTok{ (}\DecValTok{12} \SpecialCharTok{/}\NormalTok{ (n }\SpecialCharTok{*}\NormalTok{ (n }\SpecialCharTok{+} \DecValTok{1}\NormalTok{))) }\SpecialCharTok{*}\NormalTok{ (R\_sum1}\SpecialCharTok{\^{}}\DecValTok{2}\SpecialCharTok{/}\DecValTok{20} \SpecialCharTok{+}\NormalTok{ R\_sum2}\SpecialCharTok{\^{}}\DecValTok{2}\SpecialCharTok{/}\DecValTok{20} \SpecialCharTok{+}\NormalTok{ R\_sum3}\SpecialCharTok{\^{}}\DecValTok{2}\SpecialCharTok{/}\DecValTok{10}\NormalTok{) }\SpecialCharTok{{-}} \DecValTok{3} \SpecialCharTok{*}\NormalTok{ (n }\SpecialCharTok{+} \DecValTok{1}\NormalTok{)}
+  
+  \FunctionTok{return}\NormalTok{(H\_vec)}
+\NormalTok{\}}
+
+\CommentTok{\# benchmark}
+\NormalTok{performance\_all }\OtherTok{\textless{}{-}} \FunctionTok{microbenchmark}\NormalTok{(}
+  \AttributeTok{default\_method =} \FunctionTok{run\_kruskal\_default}\NormalTok{(X, grp),}
+  \AttributeTok{fast\_method    =} \FunctionTok{run\_kruskal\_fast}\NormalTok{(X, grp),}
+  \AttributeTok{vec\_method     =} \FunctionTok{run\_kruskal\_vec}\NormalTok{(X, grp),}
+  \AttributeTok{times =} \DecValTok{100}
+\NormalTok{)}
+\FunctionTok{print}\NormalTok{(performance\_all)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Unit: milliseconds
+##            expr      min        lq      mean    median       uq       max neval
+##  default_method 398.5373 647.27635 746.20044 717.13890 815.1060 1936.1393   100
+##     fast_method 147.4938 219.15465 260.26023 236.22755 286.0756  477.6167   100
+##      vec_method   9.9725  20.66925  27.72508  25.49925  30.2897  104.1825   100
+\end{verbatim}
+
+The vectorized function is the clear winner by being 21 times faster
+than the default method.
+
+\end{document}
