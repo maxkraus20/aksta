@@ -87,14 +87,20 @@ filter(full_ds, grepl('Congo', country))
 
 - Since ISO codes are standardized, download and use the [CIA country data codes](https://www.cia.gov/the-world-factbook/references/country-data-codes/) for merging. Make sure you are not losing any of the countries in your original data set when merging.
 
+Manually adjusted the names of Turkey and North Macedonia, as they are inconsistent across the datasets.
+
 ```{r}
 country_codes <- readr::read_delim('country_data_codes.csv')
 country_codes <- select(country_codes, c(Name, GENC))
 country_codes
 
 coded_ds <- merged_ds%>%
-left_join(country_codes, by = c('country' = 'Name'))%>%
-full_join(select(income_class, c(iso, income_class)), by = c('GENC' = 'iso'))
+  mutate(country = ifelse(country == "Macedonia", "North Macedonia", country))%>%
+  mutate(country = ifelse(country == "Turkey", "Turkey (Turkiye)", country))%>%
+  left_join(country_codes, by = c('country' = 'Name'))%>%
+  left_join(select(income_class, c(iso, income_class)), by = c('GENC' = 'iso'))%>%
+  arrange(country)
+coded_ds
 ```
 
 Now the previous example of the Congo rows works just fine!
@@ -109,7 +115,19 @@ Introduce continent and subcontinent (or region) data for each country.
 - Find and download an appropriate online resource.
 - Merge this information into the dataset, naming the final dataset `df_vars`. Make sure you are not losing any of the countries in your original data set when merging.
 
+Using [World region according to UN](https://ourworldindata.org/grapher/world-regions-according-to-un?tab=table)
 
+```{r}
+country_continents <- readr::read_delim('world_regions_according_to_un.csv')
+country_continents <- select(country_continents, c("Code", "World regions according to UN"))
+country_continents
+
+df_vars <- coded_ds%>%
+  left_join(country_continents, by = c("GENC" = "Code"))%>%
+  arrange(country)
+
+df_vars
+```
 
 ## e. Data Tidiness and Summary Statistics
 
@@ -117,13 +135,63 @@ Introduce continent and subcontinent (or region) data for each country.
 (observational units, variables, fixed vs. measured variables).
 Make adjustments to tidy the data, if necessary.
 
+Each row is an observations/country, every row holds one variable.
+Rename "World regions according to UN" to just Continent and removing (UN) to make the table more readable.
+GENC and continent are fixed variables and are therefore placed at the beginning of the dataset.
+
+```{r}
+df_vars <- df_vars %>%
+  rename(continent = `World regions according to UN`) %>%
+  mutate(continent = gsub("\\s*\\(UN\\)", "", continent)) %>%
+  select(country, GENC, continent, everything())
+  
+income_status <- df_vars %>%
+  count(income_class) %>%
+  mutate(percentage = n / sum(n) * 100)
+income_status
+```
+
 - Create a frequency table for the income status variable and briefly interpret the results.
+
+```{r}
+income_status <- df_vars %>%
+  count(income_class) %>%
+  mutate(percentage = n / sum(n) * 100) %>%
+  rename(absolute = n)
+income_status
+```
+
+The frequency table shows that the largest group of countries falls into the high-income category (H), accounting for about 35% of all observations. Lower-middle income (LM) and upper-middle income (UM) countries each represent approximately 24%, indicating that a large share of countries is concentrated in middle-income groups. Low-income countries (L) make up about 12% of the sample, while a small share (around 6%) has missing income classification (NA).
 
 - Analyze the distribution of income status across continents by computing absolute and relative frequencies. Comment on the findings.
 
+```{r}
+income_continents <- df_vars %>%
+  group_by(continent) %>%
+  count(income_class) %>%
+  mutate(percentage = n / sum(n) * 100) %>%
+  rename(absolute = n)
+
+income_continents
+```
+
+All low income countries are in Africa and Asia. Northern America has only high income countries (and one NA). Europe consists overwhelmingly of high and upper middle income countries, similar to Latin America and the Caribbean, although in a less pronounced way. Oceania has a somewhat more diverse structure, with more lower middle income countries than those two continents.
+
 - Using the distribution of income status across continents, identify which countries are the only ones in their income group across the continent. Discuss briefly.
 
+```{r}
+unique_groups <- income_continents %>%
+  filter(absolute == 1)
 
+unique_countries <- df_vars %>%
+  semi_join(unique_groups, by = c("continent", "income_class")) %>%
+  select(country, continent, income_class) %>%
+  na.omit()
+
+unique_countries
+```
+
+Seychelles is the only high-income country in Africa, making it a clear positive outlier, while Ukraine is the only lower-middle-income country in Europe. Interestingly, Northern America or Oceania do not have any single outlying countries, despite the higher likelihood due to the small number of countries.
 
 
 
@@ -131,8 +199,45 @@ Make adjustments to tidy the data, if necessary.
 
 - Create a table of average (mean and median) values for expenditure, youth unemployment rate and net migration rate separated into income status. Make sure that in the output, the ordering of the income classes is proper (i.e., L, LM, UM, H or the other way around). Briefly comment the results and any differences between the mean and median. 
 
+```{r}
+summary_table <- df_vars %>%
+    mutate(income_class = factor(income_class, levels = c("H", "UM", "LM", "L"))) %>%
+  group_by(income_class) %>%
+  summarise(
+    mean_edu_expenditure = mean(education_expenditures, na.rm = TRUE),
+    median_edu_expenditure = median(education_expenditures, na.rm = TRUE),
+    
+    mean_unemployment = mean(youth_unempl_rate, na.rm = TRUE),
+    median_unemployment = median(youth_unempl_rate, na.rm = TRUE),
+    
+    mean_migration = mean(net_migration_rate, na.rm = TRUE),
+    median_migration = median(net_migration_rate, na.rm = TRUE)
+  )
+summary_table
+```
+
+We can see that low middle income countries have higher relative education expanditure and lower youth unemployment. Looking at the net migration rate there is a big difference between mean and median, especially for for upper middle income countries.
+
 - Look at the standard deviation and the interquartile range of the variables per income status instead of the location statistics above. Do you gain additional insights? Briefly comment the results. 
 
+```{r}
+spread_table <- df_vars %>%
+  mutate(income_class = factor(income_class, levels = c("H", "UM", "LM", "L"))) %>%
+  group_by(income_class) %>%
+  summarise(
+    sd_edu_expenditure = sd(education_expenditures, na.rm = TRUE),
+    iqr_edu_expenditure = IQR(education_expenditures, na.rm = TRUE),
+    
+    sd_unemployment = sd(youth_unempl_rate, na.rm = TRUE),
+    iqr_unemployment = IQR(youth_unempl_rate, na.rm = TRUE),
+    
+    sd_migration = sd(net_migration_rate, na.rm = TRUE),
+    iqr_migration = IQR(net_migration_rate, na.rm = TRUE)
+  )
+spread_table
+```
+
+There is a high standard deviation in migration for upper middle income countries. Apart from migration, the spread appears to be relatively similar across different income classes.
 
 - Extend the analysis of the statistics median and IQR  to **each income status and continent combination**. Play around with displaying the resulting table. Use `pivot_longer()` and/or 
 `pivot_wider()` to generate different outputs. 
