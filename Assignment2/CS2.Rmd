@@ -242,8 +242,70 @@ There is a high standard deviation in migration for upper middle income countrie
 - Extend the analysis of the statistics median and IQR  to **each income status and continent combination**. Play around with displaying the resulting table. Use `pivot_longer()` and/or 
 `pivot_wider()` to generate different outputs. 
 Discuss the results as well as the readability of the different tables.
- 
+
+```{r}
+table_test <- df_vars %>%
+  mutate(income_class = factor(income_class, levels = c("H", "UM", "LM", "L"))) %>%
+  group_by(continent, income_class) %>%
+  summarise(
+    median_expenditure = median(education_expenditures, na.rm = TRUE),
+    iqr_expenditure = IQR(education_expenditures, na.rm = TRUE),
+    
+    median_unemployment = median(youth_unempl_rate, na.rm = TRUE),
+    iqr_unemployment = IQR(youth_unempl_rate, na.rm = TRUE),
+    
+    median_migration = median(net_migration_rate, na.rm = TRUE),
+    iqr_migration = IQR(net_migration_rate, na.rm = TRUE),
+    .groups = "drop"
+  )
+table_test
+
+table_test_2 <- table_test %>%
+  pivot_wider(
+    names_from = income_class,
+    values_from = c(median_expenditure, iqr_expenditure,
+                    median_unemployment, iqr_unemployment,
+                    median_migration, iqr_migration)
+  )
+table_test_2
+
+table_test_3 <- table_test %>%
+  pivot_wider(
+    names_from = continent,
+    values_from = -c(continent, income_class)
+  )
+table_test_3
+
+table_test_4 <- table_test %>%
+  pivot_longer(
+    cols = starts_with("median"),
+    names_to = "variable",
+    values_to = "value"
+  )
+table_test_4
+```
+
+It is difficult to come up with anything meaningful beyond the basic “table_test” structure. Any other way would deviate from tidy data principles, be less efficient in terms of data representing the data, and result in a significantly larger number of cells.
+
 - Identify countries performing well in terms of both **youth unemployment** and **net migration rate** (top 25% in net migration and bottom 25% in youth unemployment within their continent).
+
+```{r}
+top_countries <- df_vars %>%
+  group_by(continent) %>%
+  mutate(
+    migration_q75 = quantile(net_migration_rate, 0.75, na.rm = TRUE),
+    unemployment_q25 = quantile(youth_unempl_rate, 0.25, na.rm = TRUE)
+  ) %>%
+  filter(
+    net_migration_rate >= migration_q75,
+    youth_unempl_rate <= unemployment_q25
+  ) %>%
+  select(country, continent, net_migration_rate, youth_unempl_rate) %>%
+  arrange(continent, net_migration_rate, desc(youth_unempl_rate)) %>%
+  ungroup()
+
+top_countries
+```
 
 ## g. Conditional Probabilities
 
