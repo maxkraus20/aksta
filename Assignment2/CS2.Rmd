@@ -2,7 +2,9 @@
 title: "Case Study 2"
 author: "Maximilian Kraus, Lukas Vater, Hannah Weichhart"
 date: "2026-04-02"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -34,9 +36,10 @@ Load the following datasets from TUWEL and ensure that missing values are handle
   
   * `rawdata_347.txt`  which contains (estimated) net migration rate per country.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(tidyverse)
-
+```
+```{r message=FALSE}
 education <- readr::read_delim('rawdata_369.txt', delim = '\n', skip = 1, col_names = F)%>%
 separate(X1, into= c('rank', 'country', 'education_expenditures', 'year'), sep = '\\s{2,}', convert = T)%>%
 select(country, education_expenditures)
@@ -46,8 +49,6 @@ unemployment <- readr::read_csv('rawdata_373.csv')
 migration <- readr::read_delim('rawdata_347.txt', delim = '\n', skip = 1, col_names = F)%>%
 separate(X1, into = c('rank', 'country', 'net_migration_rate', 'year'), sep = '\\s{2,}', convert = T)%>%
 select(country, net_migration_rate)
-
-
 ```
 
 
@@ -57,25 +58,26 @@ select(country, net_migration_rate)
 Merge the datasets using `dplyr` on a unique key and retain the union of all observations.
 
 - What key are you using for merging?
-  The country column is used as key for merging
+  The country column is used as key for merging as it is the only one present in all three datasets.
 - Return the dimensions of the merged dataset.
-  The dimension is 227 x 4, i.e. the three observations for 227 countries.
 
 ```{r}
 merged_ds <- full_join(education, migration, by = 'country')%>%
 full_join(unemployment, by = c('country' = 'country_name'))
 
-dim(merged_ds)
+head(merged_ds)
 ```
+The dimension is: `r dim(merged_ds)`, i.e. the three observations for 227 countries.
+
 
 ## c. Enriching Data with Income Classification
 
 Obtain country income classification (low, lower-middle, upper-middle, high) from the [World Bank](https://datahelpdesk.worldbank.org/knowledgebase/articles/906519) and merge it with the dataset.
 
 - Identify common variables between datasets. Can they be used for merging? Why or why not?
-  A reasonable choice would we to merge by country name. But since the data stems from different sources, it can not be ensured that the names are all spelled the same. Two examples for both the Demokratic Republic of Congo and the Republic of Congo can be found down below. The merge should have resulted in two instead of four rows.
+  A reasonable choice would we to merge by country name. But since the data stems from different sources, it can not be ensured that the names are all spelled the same. Two examples for both the Democratic Republic of Congo and the Republic of Congo can be found down below. The merge should have resulted in two instead of four rows.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 income_class<-readr::read_delim('Country_Analytical_History.csv', skip = 11, delim = ';', col_names = c('iso', 'country', '1987':'2024'))%>%
   select(iso, country, 'income_class' = '2020')
 
@@ -87,12 +89,12 @@ filter(full_ds, grepl('Congo', country))
 
 - Since ISO codes are standardized, download and use the [CIA country data codes](https://www.cia.gov/the-world-factbook/references/country-data-codes/) for merging. Make sure you are not losing any of the countries in your original data set when merging.
 
-Manually adjusted the names of Turkey and North Macedonia, as they are inconsistent across the datasets.
+The names of Turkey and North Macedonia needed to be manually adjusted, as they are inconsistent across the datasets.
 
-```{r}
+```{r message=FALSE}
 country_codes <- readr::read_delim('country_data_codes.csv')
 country_codes <- select(country_codes, c(Name, GENC))
-country_codes
+head(country_codes)
 
 coded_ds <- merged_ds%>%
   mutate(country = ifelse(country == "Macedonia", "North Macedonia", country))%>%
@@ -100,10 +102,13 @@ coded_ds <- merged_ds%>%
   left_join(country_codes, by = c('country' = 'Name'))%>%
   left_join(select(income_class, c(iso, income_class)), by = c('GENC' = 'iso'))%>%
   arrange(country)
-coded_ds
-```
 
-Now the previous example of the Congo rows works just fine!
+head(coded_ds)
+```
+The dimension of the dataset is now: `r dim(coded_ds)`, including the additional columns "iso" and "income_class".
+
+
+The previous example of the Democratic Repulic and Republic of the Congo now works just fine!
 ```{r}
 filter(coded_ds, grepl('Congo', country))
 ```
@@ -117,17 +122,19 @@ Introduce continent and subcontinent (or region) data for each country.
 
 Using [World region according to UN](https://ourworldindata.org/grapher/world-regions-according-to-un?tab=table)
 
-```{r}
+```{r message = FALSE}
 country_continents <- readr::read_delim('world_regions_according_to_un.csv')
 country_continents <- select(country_continents, c("Code", "World regions according to UN"))
-country_continents
+head(country_continents)
 
 df_vars <- coded_ds%>%
   left_join(country_continents, by = c("GENC" = "Code"))%>%
   arrange(country)
 
-df_vars
+head(df_vars)
 ```
+As the dimension: `r dim(df_vars)` of the final dataset shows, the number of countries represented is still the same.
+
 
 ## e. Data Tidiness and Summary Statistics
 
@@ -135,7 +142,7 @@ df_vars
 (observational units, variables, fixed vs. measured variables).
 Make adjustments to tidy the data, if necessary.
 
-Each row is an observations/country, every row holds one variable.
+Each row is an observation/country, every row holds one variable.
 Rename "World regions according to UN" to just Continent and removing (UN) to make the table more readable.
 GENC and continent are fixed variables and are therefore placed at the beginning of the dataset.
 
@@ -144,11 +151,7 @@ df_vars <- df_vars %>%
   rename(continent = `World regions according to UN`) %>%
   mutate(continent = gsub("\\s*\\(UN\\)", "", continent)) %>%
   select(country, GENC, continent, everything())
-  
-income_status <- df_vars %>%
-  count(income_class) %>%
-  mutate(percentage = n / sum(n) * 100)
-income_status
+head(df_vars)
 ```
 
 - Create a frequency table for the income status variable and briefly interpret the results.
@@ -165,14 +168,18 @@ The frequency table shows that the largest group of countries falls into the hig
 
 - Analyze the distribution of income status across continents by computing absolute and relative frequencies. Comment on the findings.
 
-```{r}
+```{r warning = FALSE}
 income_continents <- df_vars %>%
   group_by(continent) %>%
   count(income_class) %>%
   mutate(percentage = n / sum(n) * 100) %>%
   rename(absolute = n)
 
-income_continents
+income_continents%>%
+  pivot_wider(-percentage, names_from = continent, values_from = absolute)
+
+income_continents%>%
+  pivot_wider(-absolute, names_from = continent, values_from = percentage)
 ```
 
 All low income countries are in Africa and Asia. Northern America has only high income countries (and one NA). Europe consists overwhelmingly of high and upper middle income countries, similar to Latin America and the Caribbean, although in a less pronounced way. Oceania has a somewhat more diverse structure, with more lower middle income countries than those two continents.
@@ -191,7 +198,7 @@ unique_countries <- df_vars %>%
 unique_countries
 ```
 
-Seychelles is the only high-income country in Africa, making it a clear positive outlier, while Ukraine is the only lower-middle-income country in Europe. Interestingly, Northern America or Oceania do not have any single outlying countries, despite the higher likelihood due to the small number of countries.
+Seychelles is the only high-income country in Africa, while Ukraine is the only lower-middle-income country in Europe. Interestingly, Northern America or Oceania do not have any single outlying countries, despite the higher likelihood due to the small number of countries.
 
 
 
@@ -326,20 +333,16 @@ p_high <- df_vars %>%
 p_neg_migration <- df_vars %>%
   filter(youth_unempl_rate > 25) %>%
   summarise(prob = mean(net_migration_rate < 0, na.rm = TRUE))
-
-p_high_given_europe
-p_high
-p_neg_migration
 ```
 
-The chance that a European country is in the high-income group is about 76.09%. The overall chance that any country belongs to the high-income group, no matter the region, is 36.92%. 
-This large difference shows that Europe has a higher number of high-income countries compared to the global average. Being in Europe greatly raises the chances that a country is classified as high-income.
+The chance that a European country is in the high-income group is about `r round(p_high_given_europe%>% pull*100, 2)`%. The overall chance that any country belongs to the high-income group, no matter the region, is `r round(p_high%>% pull*100,2)`%. 
+This large difference shows that Europe has a higher number of high-income countries compared to the global average. Being in Europe greatly raises the chances that a country is classified as high-income. When having a high youth unemployment rate the chances are with `r round(p_neg_migration%>% pull*100,2)`% also high, that the country has a negative migration rate.
 
 ## h. Simpson’s Paradox Analysis
 
 Investigate whether an overall trend in youth unemployment rate in the high and low income groups reverses when analyzed at the continent level. E.g., does the youth unemployment rate appear lower in low-income countries overall, but higher when controlling for continent? Explain the results and possible reasons behind this paradox.
 
-```{r}
+```{r message = FALSE}
 overall_unemp <- df_vars %>%
   filter(income_class %in% c("H", "L")) %>%
   group_by(income_class) %>%
