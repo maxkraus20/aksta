@@ -315,13 +315,62 @@ Estimate the following based on the observed frequencies in the data:
 
 - Given a country has high youth unemployment (above %25), what is the probability that it also has negative net migration?
 
+```{r}
+p_high_given_europe <- df_vars %>%
+  filter(continent == "Europe") %>%
+  summarise(prob = mean(income_class == "H", na.rm = TRUE))
+
+p_high <- df_vars %>%
+  summarise(prob = mean(income_class == "H", na.rm = TRUE))
+
+p_neg_migration <- df_vars %>%
+  filter(youth_unempl_rate > 25) %>%
+  summarise(prob = mean(net_migration_rate < 0, na.rm = TRUE))
+
+p_high_given_europe
+p_high
+p_neg_migration
+```
+
+The chance that a European country is in the high-income group is about 76.09%. The overall chance that any country belongs to the high-income group, no matter the region, is 36.92%. 
+This large difference shows that Europe has a higher number of high-income countries compared to the global average. Being in Europe greatly raises the chances that a country is classified as high-income.
 
 ## h. Simpson’s Paradox Analysis
 
 Investigate whether an overall trend in youth unemployment rate in the high and low income groups reverses when analyzed at the continent level. E.g., does the youth unemployment rate appear lower in low-income countries overall, but higher when controlling for continent? Explain the results and possible reasons behind this paradox.
+
+```{r}
+overall_unemp <- df_vars %>%
+  filter(income_class %in% c("H", "L")) %>%
+  group_by(income_class) %>%
+  summarise(mean_unemployment = mean(youth_unempl_rate, na.rm = TRUE))
+
+overall_unemp
+
+continent_unemp <- df_vars %>%
+  filter(income_class %in% c("H", "L")) %>%
+  group_by(continent, income_class) %>%
+  summarise(mean_unemployment = mean(youth_unempl_rate, na.rm = TRUE)) %>%
+  arrange(continent)
+
+continent_unemp
+```
+
+Low-income countries have lower youth unemployment (14.68%) than high-income countries (16.54%).
+
+However, this pattern changes when looking at individual continents. In Africa and Asia, low-income countries actually have higher unemployment than high-income countries.
+
+This is an example of Simpson’s paradox, where a trend in the overall data reverses when the data is analyzed in smaller groups. The reason is that countries are unevenly distributed across continents, and regions differ in their economic conditions.
 
 
 ## i. Data Export
 
 Export the final tidy dataset from e. as a **CSV** with:`;` as a separator; `.` representing missing values; no row names included.  Upload the `.csv` to TUWEL, together with the submission.
 
+```{r}
+write.table(df_vars,
+            file = "df_vars.csv",
+            sep = ";",
+            na = ".",
+            row.names = FALSE)
+```
