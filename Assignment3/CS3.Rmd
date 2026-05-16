@@ -1,7 +1,7 @@
 ---
 title: "Case Study 3"
-author: "First Name, Last Name"
-date: "2026-05-06"
+author: "Maximilian Kraus, Lukas Vater, Hannah Weichhart"
+date: "2026-05-16"
 output: pdf_document
 ---
 
@@ -13,6 +13,15 @@ output: pdf_document
 Load the data set you exported in the final Task of Case Study 2. 
 Eliminate all
 observations with missing values in the income status variable.
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+
+ds <- read.csv2('df_vars.csv', na.strings = '.', dec = '.')
+ds <- drop_na(ds,income_class)
+head(ds)
+```
 
 As a reminder, the data set includes world data from 2020, focusing on:
 
@@ -181,6 +190,15 @@ this case study using a left join.
 (A possible source: [World Bank](https://data.worldbank.org/indicator/SP.POP.TOTL?end=2020&start=2020)))
 
 * Inspect the data and check whether the join worked well.
+```{r}
+population <- read.csv('Pop_worldbank.csv', skip = 4) %>%
+  select(Country.Code,'population' = X2020)
+head(population)
+
+ds_inkl_pop <- left_join(ds, population, by = c('GENC' = 'Country.Code'), as)
+head(ds_inkl_pop)
+sum(is.na(ds_inkl_pop$population))
+```
 
 ## l. Scatterplot of education expenditure and net migration rate in Europe 
 
@@ -193,6 +211,14 @@ Make a scatterplot of education expenditure and net migration rate for the count
   * Remove the legend.
   
   * Comment on the plot.
+  
+```{r}
+ds_inkl_pop %>%
+  filter(continent == 'Europe') %>%
+  ggplot(aes(education_expenditures, net_migration_rate, size = population)) + 
+  geom_point(alpha = 0.7) + 
+  theme(legend.position = 'none')
+```
 
 ## m. Interactive plot
 
@@ -204,6 +230,16 @@ When hovering over the points the name of the country,
 the values for education expenditure, net migration rate, and population 
 should be shown. (Hint: use the aesthetic `text = Country`. 
 In `ggplotly` use the argument `tooltip = c("text", "x", "y", "size")`).
+
+```{r}
+#install.packages('plotly')
+library(plotly)
+scatter_pop <- ds_inkl_pop %>%
+  ggplot(aes(education_expenditures, net_migration_rate, size = population, color = continent, label = country)) + 
+  geom_point(alpha = 0.7) + 
+  theme(legend.position = 'none')
+ggplotly(scatter_pop)
+```
 
 **Hint:** If you are creating a .pdf file, keep in mind that PDF output is static and does not support HTML widgets. 
 To avoid build errors, you can wrap interactive plots in a conditional check 
@@ -221,9 +257,33 @@ such a plot where you look at the three main variables in the data set:
 education expenditure, youth unemployment rate and net migration rate. 
 Color the lines based on the income status. Briefly comment.
 
-## o. World map visualisation
+```{r}
+install.packages('GGally')
+library('GGally')
+
+ggparcoord(ds, columns = 4:6, groupColumn = 7, showPoints = TRUE, alpha = 0.4, title = 'Comparison of all three variables by income status')+
+  labs(colour = 'income class')
+
+
+```
+
+
+ ## o. World map visualisation
 
 Create a world map of the education expenditure per country.
 You can use the vignette https://cran.r-project.org/web/packages/rworldmap/vignettes/rworldmap.pdf
 to find how to do this in R. Alternatively, you can use other packages (such as **ggplot2**, **sf** and **rnaturalearthdata**) to create a map.
+
+```{r}
+#install.packages('rworldmap')
+library(rworldmap)
+head(ds)
+mapEE <- joinCountryData2Map(ds, nameJoinColumn = 'GENC')
+
+par(mai = c(.2,0,0.2, 0), xaxs = 'i', yaxs = 'i')
+map_params <- mapCountryData(mapEE, nameColumnToPlot = 'education_expenditures', mapTitle = 'Education Expenditures per country', oceanCol = 'lightblue', missingCountryCol = 'light grey', borderCol = 'darkgrey', addLegend = FALSE)
+mtext(text = '% GDP', side = 1, line = -0.5)
+do.call(addMapLegend, c(map_params, legendLabels = 'all', legendIntervals = 'data', legendMar = 3.5))
+```
+
 
