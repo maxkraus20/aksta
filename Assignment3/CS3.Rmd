@@ -19,7 +19,8 @@ library(tidyverse)
 library(ggplot2)
 
 ds <- read.csv2('df_vars.csv', na.strings = '.', dec = '.')
-ds <- drop_na(ds,income_class)
+ds <- drop_na(ds, income_class)
+ds <- mutate(ds, income_class = factor(income_class, levels = c("H", "UM", "LM", "L")))
 head(ds)
 ```
 
@@ -197,7 +198,10 @@ head(population)
 
 ds_inkl_pop <- left_join(ds, population, by = c('GENC' = 'Country.Code'), as)
 head(ds_inkl_pop)
-sum(is.na(ds_inkl_pop$population))
+```
+To check how good the join worked, we filtered the joined dataset for NA values in the copulation column. This shows, that only for Taiwan, no population data is available.
+```{r}
+filter(ds_inkl_pop, is.na(ds_inkl_pop$population))
 ```
 
 ## l. Scatterplot of education expenditure and net migration rate in Europe 
@@ -217,8 +221,10 @@ ds_inkl_pop %>%
   filter(continent == 'Europe') %>%
   ggplot(aes(education_expenditures, net_migration_rate, size = population)) + 
   geom_point(alpha = 0.7) + 
+  labs(title = 'Net migration rate vs. Education expenditures', subtitle = 'in European countries scaled by population ', x = 'Education expenditures [%GDP]', y = 'Net migration rate [1/1,000 persons]') +
   theme(legend.position = 'none')
 ```
+The scatter plot suggests that countries with a higher investment in education also have a higher net migration rate. There is also a cluster of points around a 5% education expenditure and due to there relatively large size, this suggests that a large part of Europs population is located there. 
 
 ## m. Interactive plot
 
@@ -235,11 +241,15 @@ In `ggplotly` use the argument `tooltip = c("text", "x", "y", "size")`).
 #install.packages('plotly')
 library(plotly)
 scatter_pop <- ds_inkl_pop %>%
-  ggplot(aes(education_expenditures, net_migration_rate, size = population, color = continent, label = country)) + 
+  ggplot(aes(education_expenditures, net_migration_rate, size = population, color = continent, text = paste('Country: ', country, '<br>Education expenditures: ', education_expenditures, '<br>Net migration rate: ', net_migration_rate, '<br>population: ', population))) + 
   geom_point(alpha = 0.7) + 
-  theme(legend.position = 'none')
-ggplotly(scatter_pop)
+  theme(legend.position = 'none') + 
+  labs(title = 'Net migration rate vs. Education expenditures<br><sup>worldwide scaled by population', x = 'Education expenditures [%GDP]', y = 'Net migration rate [1/1,000 persons]')
+ggplotly(scatter_pop, tooltip = c("text")) #>%>
+  #layout(title = paste('Net migration rate vs. Education expenditures<br><sup>worldwide scaled by population'))
 ```
+
+The plot shows, that most countries are distributed around the 0 persons net migration rate and spread over a education expenditure of 1,2 - 7,0% GDP. A drastic outlier regarding the net migration rate is Lebanon with -88.7/1000 persons. For the education expenditures the outliers are the Solomon Islands, the Federated States of Micronesia and Cuba with >9% of their GDP.
 
 **Hint:** If you are creating a .pdf file, keep in mind that PDF output is static and does not support HTML widgets. 
 To avoid build errors, you can wrap interactive plots in a conditional check 
@@ -258,15 +268,14 @@ education expenditure, youth unemployment rate and net migration rate.
 Color the lines based on the income status. Briefly comment.
 
 ```{r}
-install.packages('GGally')
+#install.packages('GGally')
 library('GGally')
-
-ggparcoord(ds, columns = 4:6, groupColumn = 7, showPoints = TRUE, alpha = 0.4, title = 'Comparison of all three variables by income status')+
+ggparcoord(ds, columns = 4:6, groupColumn = 7, showPoints = TRUE, alpha = 0.4, title = 'Comparison of all three variables by income status', scale = 'std')+
   labs(colour = 'income class')
 
 
 ```
-
+The most obvious cluster in the data is the one of a high net migration rate of high income countries. These also tend to have a high education expenditure and low youth unemployment rate. For the low income countries a slight cluster around a low education expenditure is shows. It also can be seen that some of the highest education expenditures and lowest net migration rates are presented by upper and lower middle income countries.
 
  ## o. World map visualisation
 
@@ -285,5 +294,5 @@ map_params <- mapCountryData(mapEE, nameColumnToPlot = 'education_expenditures',
 mtext(text = '% GDP', side = 1, line = -0.5)
 do.call(addMapLegend, c(map_params, legendLabels = 'all', legendIntervals = 'data', legendMar = 3.5))
 ```
-
+The map shows that the highest education expenditures can be found in South America, South Africa and northern Europe. The lowest values are distributed over Africa, Central, South and Southeast Asia.
 
