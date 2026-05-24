@@ -58,7 +58,7 @@ income status such that in the plots the legend is ordered from High (H) to Low 
 ```{r}
 ggplot(ds, aes(x = education_expenditures, fill = income_class, color = income_class)) + 
   geom_density(color = "black", alpha = 0.5) + 
-  labs(x = "Education expenditure (% of GDP)", y = "Density") +
+  labs(x = "Education expenditure (% of GDP)", y = "Density", title = "Distribution of Education Expenditure by Income Status") +
   theme(legend.position = "top",
         legend.justification = "center",
         legend.title = element_blank()
@@ -76,7 +76,7 @@ Investigate how the income status is distributed in the different continents.
 ```{r}
 ggplot(ds, aes(x = continent, fill = income_class)) + 
   geom_bar(position = "stack") +
-  labs(x = "Continent", y = "Frequency of Income Groups") +
+  labs(x = "Continent", y = "Frequency of Income Groups", title = "Income Status Distribution by Continent (Absolute Frequencies)") +
   theme(legend.position = "top",
         legend.justification = "center",
         legend.title = element_blank(),
@@ -91,14 +91,14 @@ Comment the plot.
 ```{r}
 ggplot(ds, aes(x = continent, fill = income_class)) + 
   geom_bar(position = "fill") +
-  labs(x = "Continent", y = "relative Frequencies of Income Groups") +
+  labs(x = "Continent", y = "relative Frequencies of Income Groups", title = "Income Status Distribution by Continent (Relative Frequencies)") +
   theme(legend.position = "top",
         legend.justification = "center",
         legend.title = element_blank(),
         axis.text.x = element_text(angle = 15, hjust = 1))
 ```
 
-Does not take into account how many countries are actually in one income group. Asia for example has more high income countries than North America. 
+Does not take into account how many countries are actually in one income group. Asia for example has more high income countries than North America which is not reflected in this plot.
 
 * Create a mosaic plot of continents and income status using base R functions. 
 
@@ -126,12 +126,11 @@ ds_oceania <- ds %>%
 
 ggplot(ds_oceania, aes(x = subcontinent, fill = income_class)) +
   geom_bar(position = "stack") +
-  labs(x = "Continent", y = "relative Frequencies of Income Groups") +
+  labs(x = "Continent", y = "relative Frequencies of Income Groups", title = "Income Status Distribution across Oceania's Subregions") +
   theme(legend.position = "top",
         legend.justification = "center",
         legend.title = element_blank(),
         axis.text.x = element_text(angle = 15, hjust = 1))
-
 ```
 
 Australia and New Zealand are both high income countries. Melanesia consits of mostly lower-middle income countries. Micronesia consits of roughly half lower-middle and upper-middle income countriesm it is also the subcontinent with the most countries. Polynesia consits of mostly upper-middle income countries.
