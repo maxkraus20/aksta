@@ -55,24 +55,86 @@ income status such that in the plots the legend is ordered from High (H) to Low 
 
   Comment briefly on the plot.
 
+```{r}
+ggplot(ds, aes(x = education_expenditures, fill = income_class, color = income_class)) + 
+  geom_density(color = "black", alpha = 0.5) + 
+  labs(x = "Education expenditure (% of GDP)", y = "Density") +
+  theme(legend.position = "top",
+        legend.justification = "center",
+        legend.title = element_blank()
+  )
+```
+
+Low-income countries tend to have the lowest education expenditure, with a very broad distribution concentrated at low values. Lower-middle and upper-middle income countries show similar central tendencies, though the LM group appears more spread out. High-income countries tend to spend the most, with a pronounced peak around 5% of GDP.
+
 ## b. Income status in different continents
 
 Investigate how the income status is distributed in the different continents. 
 
 * Using **ggplot2**, create a stacked barplot of absolute frequencies showing how the entities are split into continents and income status. Comment the plot.
 
+```{r}
+ggplot(ds, aes(x = continent, fill = income_class)) + 
+  geom_bar(position = "stack") +
+  labs(x = "Continent", y = "Frequency of Income Groups") +
+  theme(legend.position = "top",
+        legend.justification = "center",
+        legend.title = element_blank(),
+        axis.text.x = element_text(angle = 15, hjust = 1))
+```
+
+While the absolute barplot shows the actual number of entities per continent, it can be misleading for comparisons. For example, Oceania appears to have very few high-income countries, but proportionally it has more than Asia.
+
 * Create another stacked barplot of relative frequencies (height of the bars should be one).
 Comment the plot.
 
+```{r}
+ggplot(ds, aes(x = continent, fill = income_class)) + 
+  geom_bar(position = "fill") +
+  labs(x = "Continent", y = "relative Frequencies of Income Groups") +
+  theme(legend.position = "top",
+        legend.justification = "center",
+        legend.title = element_blank(),
+        axis.text.x = element_text(angle = 15, hjust = 1))
+```
+
+Does not take into account how many countries are actually in one income group. Asia for example has more high income countries than North America. 
+
 * Create a mosaic plot of continents and income status using base R functions. 
+
+```{r}
+mosaicplot(table(ds$continent, ds$income_class),
+           main = "Income status by continent",
+           xlab = "Continent",
+           ylab = "Frequency of Income Groups",
+           color = TRUE)
+```
 
 * Briefly comment on the differences between the three plots generated to investigate the income 
 distribution among the different continents.
+
+Stacked bar plot of relative frequencies and mosaic are both normalized and show the relative amount of countries in each income group on the y-axis. The mosaic plot also takes into account the number of countries by scaling the width of the bars accordingly. This leads to some unwanted results - x-axis labels overlap which is not easy to correct and the bar for North America looks strange, since it´s so thin and only consits of one income group. The stacked bar plot of absolute frequencies takes the number of countries into account by displaying them on the x-Axis.
 
 ## c. Income status in different subcontinents
 
 For Oceania, investigate further how the income status distribution is in the different subcontinents.
 Use one of the plots in b. for this purpose. Comment on the results.
+
+```{r}
+ds_oceania <- ds %>%
+  filter(continent == "Oceania")
+
+ggplot(ds_oceania, aes(x = subcontinent, fill = income_class)) +
+  geom_bar(position = "stack") +
+  labs(x = "Continent", y = "relative Frequencies of Income Groups") +
+  theme(legend.position = "top",
+        legend.justification = "center",
+        legend.title = element_blank(),
+        axis.text.x = element_text(angle = 15, hjust = 1))
+
+```
+
+Australia and New Zealand are both high income countries. Melanesia consits of mostly lower-middle income countries. Micronesia consits of roughly half lower-middle and upper-middle income countriesm it is also the subcontinent with the most countries. Polynesia consits of mostly upper-middle income countries.
 
 ## d. Net migration in different continents
 
@@ -86,6 +148,30 @@ which country in Asia constitutes the largest positive outlier.
 
 * Comment on the plot.
 
+```{r}
+ggplot(ds, aes(x = continent, y = net_migration_rate)) +
+  geom_boxplot(fill = "steelblue", alpha = 0.7) +
+  labs(x = "Continent",
+       y = "Net Migration Rate",
+       title = " Net Migration Rate by Continent") +
+  theme(axis.text.x = element_text(angle = 15, hjust = 1),
+        text = element_text(color = "steelblue"),
+        panel.background = element_rect(fill = adjustcolor("steelblue", alpha.f = 0.2)))
+  
+# outlier
+ds %>%
+  filter(continent == "Asia") %>%
+  slice_min(net_migration_rate, n = 1) %>%
+  select(country, net_migration_rate)
+
+ds %>%
+  filter(continent == "Asia") %>%
+  slice_max(net_migration_rate, n = 1) %>%
+  select(country, net_migration_rate)
+        
+```
+
+Across all continents, the net migration rate for most countries is close to zero. Oceania stands out as the continent with the greatest variability in migration rates. Lebanon represents the most extreme negative outlier with a net migration rate of -89. Syria, on the other hand, constitutes the largest positive outlier with a rate of 27 per 1,000 persons. Latin America and the Caribbean also has a few outliers in the range -15 to 15.
 
 ## e. Net migration in different subcontinents
 
@@ -99,6 +185,26 @@ using again parallel boxplots.  Group the boxplots by continent (hint: use `face
 * Remember to prettify the plot (rotate axis labels if needed).
 
 * Describe what you see.
+
+```{r}
+# remove NA values to prettify
+ds_clean <- ds %>% filter(!is.na(subcontinent))
+
+ggplot(ds_clean, aes(x = subcontinent, y = net_migration_rate)) +
+  geom_boxplot(fill = "steelblue", alpha = 0.7) +
+  facet_grid(~ continent, scales = "free_x", space = "free_x", labeller = label_wrap_gen(width = 10)) +
+  labs(x = "Subcontinent",
+       y = "Net Migration Rate",
+       title = "Net Migration Rate by Subcontinent") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        strip.text = element_text(size = 5),
+        text = element_text(color = "steelblue"),
+        panel.background = element_rect(fill = adjustcolor("steelblue", alpha.f = 0.2)))
+```
+
+das gehört auch noch zu spread out21:34Claude hat geantwortet: > Lebanon is again such an extreme outlier that it makes all other values comparatively small.
+Lebanon is again such an extreme outlier that it makes all other values comparatively small. Net migration rates in Western Asia, as well as in Micronesia and Polynesia, are in general a lot more spread out than in other subregions. Micronesia and Polynesia tend to be generally negative, however these regions consist of micronations which often skew statistics. Western Europe and Australia and New Zealand have the highest positive net migration rates. Latin America and the Caribbean stands out as it has many countries whose migration rates are outliers, in both positive and negative directions.
 
 ## f. Median net migration rate per subcontinent.
 
