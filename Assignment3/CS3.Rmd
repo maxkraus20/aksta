@@ -107,13 +107,14 @@ mosaicplot(table(ds$continent, ds$income_class),
            main = "Income status by continent",
            xlab = "Continent",
            ylab = "Frequency of Income Groups",
-           color = TRUE)
+           color = c('#F8766D', '#7CAE00', '#00BFC4', '#C77CFF' ),#same colors as in the above gg2 plots
+           )
 ```
 
 * Briefly comment on the differences between the three plots generated to investigate the income 
 distribution among the different continents.
 
-Stacked bar plot of relative frequencies and mosaic are both normalized and show the relative amount of countries in each income group on the y-axis. The mosaic plot also takes into account the number of countries by scaling the width of the bars accordingly. This leads to some unwanted results - x-axis labels overlap which is not easy to correct and the bar for North America looks strange, since it´s so thin and only consits of one income group. The stacked bar plot of absolute frequencies takes the number of countries into account by displaying them on the x-Axis.
+Stacked bar plot of relative frequencies and mosaic are both normalized and show the relative amount of countries in each income group on the y-axis. The mosaic plot also takes into account the number of countries by scaling the width of the bars accordingly. This leads to some unwanted results - x-axis labels overlap which is not easy to correct and the bar for North America looks strange, since it´s so thin and only consists of one income group. The stacked bar plot of absolute frequencies takes the number of countries into account by displaying them on the x-Axis.
 
 ## c. Income status in different subcontinents
 
@@ -350,8 +351,7 @@ scatter_pop <- ds_inkl_pop %>%
   geom_point(alpha = 0.7) + 
   theme(legend.position = 'none') + 
   labs(title = 'Net migration rate vs. Education expenditures<br><sup>worldwide scaled by population', x = 'Education expenditures [%GDP]', y = 'Net migration rate [1/1,000 persons]')
-ggplotly(scatter_pop, tooltip = c("text")) #>%>
-  #layout(title = paste('Net migration rate vs. Education expenditures<br><sup>worldwide scaled by population'))
+ggplotly(scatter_pop, tooltip = c("text"))
 ```
 
 The plot shows, that most countries are distributed around the 0 persons net migration rate and spread over a education expenditure of 1,2 - 7,0% GDP. A drastic outlier regarding the net migration rate is Lebanon with -88.7/1000 persons. For the education expenditures the outliers are the Solomon Islands, the Federated States of Micronesia and Cuba with >9% of their GDP.
@@ -377,8 +377,6 @@ Color the lines based on the income status. Briefly comment.
 library('GGally')
 ggparcoord(ds, columns = 4:6, groupColumn = 7, showPoints = TRUE, alpha = 0.4, title = 'Comparison of all three variables by income status', scale = 'std')+
   labs(colour = 'income class')
-
-
 ```
 The most obvious cluster in the data is the one of a high net migration rate of high income countries. These also tend to have a high education expenditure and low youth unemployment rate. For the low income countries a slight cluster around a low education expenditure is shows. It also can be seen that some of the highest education expenditures and lowest net migration rates are presented by upper and lower middle income countries.
 
@@ -395,9 +393,10 @@ head(ds)
 mapEE <- joinCountryData2Map(ds, nameJoinColumn = 'GENC')
 
 par(mai = c(.2,0,0.2, 0), xaxs = 'i', yaxs = 'i')
-map_params <- mapCountryData(mapEE, nameColumnToPlot = 'education_expenditures', mapTitle = 'Education Expenditures per country', oceanCol = 'lightblue', missingCountryCol = 'light grey', borderCol = 'darkgrey', addLegend = FALSE)
+map_params <- mapCountryData(mapEE, nameColumnToPlot = 'education_expenditures', mapTitle = 'Education Expenditures per country', oceanCol = 'lightblue', missingCountryCol = 'light grey', borderCol = 'darkgrey', addLegend = FALSE, catMethod = 'pretty')
 mtext(text = '% GDP', side = 1, line = -0.5)
 do.call(addMapLegend, c(map_params, legendLabels = 'all', legendIntervals = 'data', legendMar = 3.5))
 ```
-The map shows that the highest education expenditures can be found in South America, South Africa and northern Europe. The lowest values are distributed over Africa, Central, South and Southeast Asia.
+The map shows that the highest education expenditures can be found in Brazil and Bolivia, South Africa and northern Europe. Cuba also stands out again with its high education expenditure and bright red coloring. The lowest values are distributed over Africa, Central, South and Southeast Asia.
+
 
