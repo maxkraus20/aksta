@@ -1,18 +1,44 @@
 library(shiny)
 library(ggplot2)
 library(dplyr)
+library(tidyverse)
+library(DT)
+#install.packages('rjson')
+library(rjson)
 
+data <- fromJSON(file = 'data_cia2.json')
+df <- tibble()
+for (i in 1:length(data)){
+  df = bind_rows(df, data[[i]])}
+colnames(df)
+variables <- list("Expenditure on education"= 'expenditure', "Youth unemployment rate" = 'youth_unempl_rate', "Net migration rate" = 'net_migr_rate', "Electricity from fossil fuels" = 'electricity_fossil_fuel', "Area"= 'area', "Population growth rate" = 'pop_growth_rate', "Life expectancy at birth"= 'life_expectancy')
 
 # ── UI ────────────────────────────────────────────────────────────────────────
 
 ui <- fluidPage(
   
-  titlePanel(""),
+  titlePanel("CIA World Factbook 2020"),
+  textOutput('subtitle'),
+  br(),
   
   sidebarLayout(
     
     # ── Sidebar: all inputs ──────────────────────────────────────────────────
     sidebarPanel(
+      tabsetPanel(
+        tabPanel(
+          title = "Univariate analysis",
+          br(),
+          selectInput('variable', 'Select a variable:', choices = variables, selected = "Expenditure on education"),
+          actionButton('view', 'View raw data'),
+          DTOutput('raw')
+        ),
+        
+        tabPanel(
+          title = "Multivariate analysis",
+          br()
+        )
+      )
     ), 
     
     
@@ -22,18 +48,19 @@ ui <- fluidPage(
       tabsetPanel(
         
         tabPanel(
-          title = "Plot",
+          title = "Map",
           br(),
-          plotOutput("scatter")        
+          plotOutput("Map")        
         ),
         
         tabPanel(
-          title = "Summary table",
+          title = "Global analysis",
           br(),
-          tableOutput("table")         
+          DTOutput("table")         
         ),
         
         tabPanel(
+          title = "Analysis per continent"
         )
         
       ) 
@@ -48,7 +75,10 @@ ui <- fluidPage(
 # ── Server ────────────────────────────────────────────────────────────────────
 
 server <- function(input, output, session) {
-  
+  output$subtitle <- renderText({'This is a shiny app to visualize the variables from the CIA 2020 factbook!'})
+  eventReactive(input$raw, {
+    output$raw <- DT::renderDT(df[c('country', 'continent', input$variable)], otions = list(pageLength = 15))
+  })
   
   
 } # end server
@@ -56,3 +86,4 @@ server <- function(input, output, session) {
 
 # ── Launch ────────────────────────────────────────────────────────────────────
 shinyApp(ui = ui, server = server)
+
