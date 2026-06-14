@@ -3,6 +3,7 @@ title: "Case Study 2"
 author: "Maximilian Kraus, Lukas Vater, Hannah Weichhart"
 date: "2026-04-02"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 ---
