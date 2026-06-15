@@ -13,7 +13,6 @@ data <- fromJSON(file = 'data_cia2.json')
 df <- tibble()
 for (i in 1:length(data)){
   df = bind_rows(df, data[[i]])}
-colnames(df)
 variables <- list("Expenditure on education"= 'expenditure', "Youth unemployment rate" = 'youth_unempl_rate', "Net migration rate" = 'net_migr_rate', "Electricity from fossil fuels" = 'electricity_fossil_fuel', "Life expectancy at birth"= 'life_expectancy')
 scales <- list("Area"= 'area', "Population" = 'population')
 world_map<-map_data("world")
@@ -90,7 +89,7 @@ server <- function(input, output, session) {
   })
   output$subtitle <- renderText({'This is a shiny app to visualize the variables from the CIA 2020 factbook!'})
   observeEvent(input$view, {
-    output$raw <- DT::renderDT(df_world[c('country', 'continent', input$variable)], options = list(pageLength = 15))
+    output$raw <- DT::renderDT(df %>% select('country', 'continent', input$variable) %>% arrange(desc(.data[[selected_var()]])), options = list(pageLength = 15))
   })
   var1 <- reactive({return(input$variable_1)})
   var2 <- reactive({return(input$variable_2)})
