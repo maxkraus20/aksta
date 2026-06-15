@@ -100,18 +100,7 @@ server <- function(input, output, session) {
   output$Map <- renderPlotly({ggplot(df_world, aes(x=long,y=lat, group=group, fill =  .data[[selected_var()]]))+#.data[[selected_var()]]))+
     geom_polygon(colour="white")})
   
-  #
-  output$scatter <- renderPlotly({
-    p <- ggplot(df, aes(x = .data[[var1()]], y = .data[[var2()]])) +
-      geom_point(aes(size = .data[[vars()]], color = continent)) +
-      geom_smooth(aes(color = continent), method = 'loess', se = FALSE, show.legend = FALSE) +
-      labs(x = names(variables)[variables == var1()],
-           y = names(variables)[variables == var2()]) +
-      theme_minimal()
-    ggplotly(p)
-  })
-  
-  # Univariate Global analysis  ────────────────────────────────────────────────
+  # Multivariate ────────────────────────────────────────────────────────────
   output$scatter <- renderPlotly({
     p <- ggplot(df, aes(x = .data[[var1()]], y = .data[[var2()]])) +
       geom_point(aes(size = .data[[vars()]], color = continent), alpha = 0.7) +
@@ -125,7 +114,17 @@ server <- function(input, output, session) {
     ggplotly(p)
   })
   
-  # Multivariate
+  # Univariate Global analysis  ────────────────────────────────────────────────
+  output$boxplot_global <- renderPlotly({
+    p <- ggplot(df, aes(y = .data[[selected_var()]])) +
+      geom_boxplot(fill = "steelblue", alpha = 0.7) +
+      labs(y = names(variables)[variables == selected_var()],
+           title = paste("Boxplot of", names(variables)[variables == selected_var()])) +
+      theme_minimal() +
+      theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+    ggplotly(p)
+  })
+
   output$hist_global <- renderPlotly({
     p <- ggplot(df, aes(x = .data[[selected_var()]])) +
       geom_histogram(aes(y = after_stat(density)), bins = 30,
@@ -137,7 +136,7 @@ server <- function(input, output, session) {
     ggplotly(p)
   })
   
-  #  Univariate Continent analysis
+  #  Univariate Continent analysis ────────────────────────────────────────────────────────────
   output$boxplot_continent <- renderPlotly({
     p <- ggplot(df, aes(x = continent, y = .data[[selected_var()]], fill = continent)) +
       geom_boxplot(alpha = 0.7) +
